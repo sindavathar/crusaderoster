@@ -1,0 +1,43 @@
+.dashboard-container {
+  padding: 20px;
+}
+
+.category {
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin: 10px 0;
+}
+
+.category ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.category li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.add-list-form {
+  margin-top: 20px;
+}
+
+.add-list-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.add-list-form label {
+  margin: 5px 0;
+}
+
+.add-list-form input, .add-list-form button {
+  padding: 10px;
+  margin: 5px 0;
+}
+
+mat-slide-toggle {
+  margin-bottom: 20px;
+}

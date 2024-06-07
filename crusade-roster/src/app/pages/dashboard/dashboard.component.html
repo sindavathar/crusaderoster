@@ -1,0 +1,51 @@
+<div class="dashboard-container">
+  <h2>Dashboard</h2>
+
+  <mat-slide-toggle [(ngModel)]="isCrusadeList" (change)="toggleListType()">
+    {{ isCrusadeList ? 'Crusade Lists' : 'Matched Lists' }}
+  </mat-slide-toggle>
+
+  <div *ngIf="isCrusadeList">
+    <div class="category">
+      <h3>Crusade Lists</h3>
+      <p>Manage and view your crusade lists.</p>
+      <ul>
+        <li *ngFor="let list of crusadeLists; let i = index">
+          <span (click)="viewList('crusade', list)">{{ list }}</span>
+          <button (click)="renameList('crusade', i)">Rename</button>
+          <button (click)="deleteList('crusade', i)">Delete</button>
+        </li>
+      </ul>
+    </div>
+    <div class="add-list-form">
+      <h3>Add a Crusade List</h3>
+      <form (ngSubmit)="onAddList()">
+        <label for="listName">List Name:</label>
+        <input type="text" id="listName" [(ngModel)]="listName" name="listName" required>
+        <button type="submit">Add List</button>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="!isCrusadeList">
+    <div class="category">
+      <h3>Matched Lists</h3>
+      <p>Manage and view your matched lists.</p>
+      <ul>
+        <li *ngFor="let list of matchedLists; let i = index">
+          <span (click)="viewList('matched', list)">{{ list }}</span>
+          <button (click)="renameList('matched', i)">Rename</button>
+          <button (click)="deleteList('matched', i)">Delete</button>
+        </li>
+      </ul>
+    </div>
+    <div class="add-list-form">
+      <h3>Add a Matched List</h3>
+      <form (ngSubmit)="onAddList()">
+        <label for="listName">List Name:</label>
+        <input type="text" id="listName" [(ngModel)]="listName" name="listName" required>
+        <button type="submit">Add List</button>
+      </form>
+    </div>
+  </div>
+</div>
