@@ -139,4 +139,13 @@ export class StorageService {
       return v.toString(16);
     });
   }
+
+  removeUnitFromList(listId: string, unitName: string, category: keyof Omit<Faction, 'name'>): void {
+    const units = this.getUnitsForList(listId);
+    const index = units[category].indexOf(unitName);
+    if (index !== -1) {
+      units[category].splice(index, 1);
+      localStorage.setItem(`units_${listId}`, JSON.stringify(units));
+    }
+  }
 }

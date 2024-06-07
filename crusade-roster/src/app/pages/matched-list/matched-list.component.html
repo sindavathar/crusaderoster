@@ -1,3 +1,4 @@
+<!-- matched-list.component.html -->
 <div class="matched-list-container">
   <h2>Matched List: {{ listName }}</h2>
 
@@ -5,7 +6,10 @@
     <h3>{{ category | titlecase }}</h3>
     <button (click)="addUnitToCategory(category)">+</button>
     <ul>
-      <li *ngFor="let unit of units[category]">{{ unit }}</li>
+      <li *ngFor="let unit of units[category]">
+        {{ unit }}
+        <button (click)="removeUnitFromCategory(category, unit)">Remove</button>
+      </li>
     </ul>
   </div>
 </div>
