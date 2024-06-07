@@ -3,20 +3,25 @@ import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { DashboardComponent } from './dashboard.component';
+import { StorageService } from '../../services/storage.service'; // Import the service
+
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
+  let storageService: StorageService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [DashboardComponent],
-      imports: [RouterTestingModule, FormsModule, MatSlideToggleModule]
+      imports: [RouterTestingModule, FormsModule, MatSlideToggleModule],
+      providers: [StorageService] // Provide the service
     })
       .compileComponents();
 
     fixture = TestBed.createComponent(DashboardComponent);
     component = fixture.componentInstance;
+    storageService = TestBed.inject(StorageService); // Inject the service
     fixture.detectChanges();
   });
 
@@ -41,7 +46,7 @@ describe('DashboardComponent', () => {
     component.listName = 'Test Matched List';
     component.onAddList();
 
-    const localLists = JSON.parse(localStorage.getItem('angular17lists') || '{}');
+    const localLists = storageService.getLists();
     expect(localLists.matched).toContain('Test Matched List');
   });
 
@@ -50,7 +55,7 @@ describe('DashboardComponent', () => {
     component.listName = 'Test Crusade List';
     component.onAddList();
 
-    const localLists = JSON.parse(localStorage.getItem('angular17lists') || '{}');
+    const localLists = storageService.getLists();
     expect(localLists.crusade).toContain('Test Crusade List');
   });
 
@@ -61,7 +66,7 @@ describe('DashboardComponent', () => {
     spyOn(window, 'prompt').and.returnValue(newName);
     component.renameList('crusade', 0);
 
-    const localLists = JSON.parse(localStorage.getItem('angular17lists') || '{}');
+    const localLists = storageService.getLists();
     expect(localLists.crusade).toContain(newName);
   });
 
@@ -70,7 +75,7 @@ describe('DashboardComponent', () => {
     component.crusadeLists = ['Test Crusade List'];
     component.deleteList('crusade', 0);
 
-    const localLists = JSON.parse(localStorage.getItem('angular17lists') || '{}');
+    const localLists = storageService.getLists();
     expect(localLists.crusade).not.toContain('Test Crusade List');
   });
 
@@ -81,7 +86,7 @@ describe('DashboardComponent', () => {
     spyOn(window, 'prompt').and.returnValue(newName);
     component.renameList('matched', 0);
 
-    const localLists = JSON.parse(localStorage.getItem('angular17lists') || '{}');
+    const localLists = storageService.getLists();
     expect(localLists.matched).toContain(newName);
   });
 
@@ -90,7 +95,7 @@ describe('DashboardComponent', () => {
     component.matchedLists = ['Test Matched List'];
     component.deleteList('matched', 0);
 
-    const localLists = JSON.parse(localStorage.getItem('angular17lists') || '{}');
+    const localLists = storageService.getLists();
     expect(localLists.matched).not.toContain('Test Matched List');
   });
 });

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { StorageService } from '../../services/storage.service'; // Import the service
 
 @Component({
   selector: 'app-dashboard',
@@ -12,7 +13,7 @@ export class DashboardComponent implements OnInit {
   matchedLists: string[] = [];
   crusadeLists: string[] = [];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private storageService: StorageService) {} // Inject the service
 
   ngOnInit() {
     this.loadLists();
@@ -27,61 +28,41 @@ export class DashboardComponent implements OnInit {
   }
 
   onAddList() {
-    const localLists = localStorage.getItem('angular17lists');
-    let lists: { matched: string[]; crusade: string[] } = { matched: [], crusade: [] };
-
-    if (localLists != null) {
-      lists = JSON.parse(localLists);
-    }
-
     if (this.isCrusadeList) {
-      lists.crusade.push(this.listName);
+      this.storageService.addList('crusade', this.listName);
       this.crusadeLists.push(this.listName);
     } else {
-      lists.matched.push(this.listName);
+      this.storageService.addList('matched', this.listName);
       this.matchedLists.push(this.listName);
     }
-
-    localStorage.setItem('angular17lists', JSON.stringify(lists));
     this.listName = ''; // Clear the input field after adding the list
   }
 
   loadLists() {
-    const localLists = localStorage.getItem('angular17lists');
-    if (localLists != null) {
-      const lists = JSON.parse(localLists);
-      this.matchedLists = lists.matched || [];
-      this.crusadeLists = lists.crusade || [];
-    }
+    const lists = this.storageService.getLists();
+    this.matchedLists = lists.matched;
+    this.crusadeLists = lists.crusade;
   }
 
-  renameList(type: string, index: number) {
+  renameList(type: 'matched' | 'crusade', index: number) {
     const newName = prompt('Enter new name');
     if (newName) {
+      this.storageService.renameList(type, index, newName);
       if (type === 'crusade') {
         this.crusadeLists[index] = newName;
       } else {
         this.matchedLists[index] = newName;
       }
-      this.updateLocalStorage();
     }
   }
 
-  deleteList(type: string, index: number) {
+  deleteList(type: 'matched' | 'crusade', index: number) {
+    this.storageService.deleteList(type, index);
     if (type === 'crusade') {
       this.crusadeLists.splice(index, 1);
     } else {
       this.matchedLists.splice(index, 1);
     }
-    this.updateLocalStorage();
-  }
-
-  updateLocalStorage() {
-    const lists = {
-      matched: this.matchedLists,
-      crusade: this.crusadeLists
-    };
-    localStorage.setItem('angular17lists', JSON.stringify(lists));
   }
 
   viewList(type: string, name: string) {

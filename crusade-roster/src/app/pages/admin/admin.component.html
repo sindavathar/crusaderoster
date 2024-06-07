@@ -1,0 +1,24 @@
+<div class="admin-container">
+  <h2>Admin Panel</h2>
+
+  <div class="add-faction">
+    <input type="text" [(ngModel)]="newFactionName" placeholder="New Faction Name">
+    <button (click)="addFaction()">Add Faction</button>
+  </div>
+
+  <div *ngFor="let faction of factions" class="faction">
+    <h3 (click)="toggleFaction(faction)">{{ faction.name }}</h3>
+    <div *ngIf="selectedFaction === faction">
+      <div class="category" *ngFor="let category of categories">
+        <h4 (click)="toggleCategory(faction, category)">{{ category | titlecase }}</h4>
+        <div *ngIf="selectedCategory === category">
+          <ul>
+            <li *ngFor="let unit of getUnits(faction, category)">{{ unit }}</li>
+          </ul>
+          <input type="text" [(ngModel)]="newUnitName" placeholder="New Unit Name">
+          <button (click)="addUnit(faction, category)">Add Unit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
