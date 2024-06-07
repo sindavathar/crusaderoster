@@ -21,7 +21,15 @@
       <h3>Add a Crusade List</h3>
       <form (ngSubmit)="onAddList()">
         <label for="listName">List Name:</label>
+        <!--suppress XmlDuplicatedId -->
         <input type="text" id="listName" [(ngModel)]="listName" name="listName" required>
+
+        <label for="factionSelect">Faction:</label>
+        <!--suppress XmlDuplicatedId -->
+        <select id="factionSelect" [(ngModel)]="selectedFaction" name="factionSelect" required>
+          <option *ngFor="let faction of factions" [value]="faction">{{ faction }}</option>
+        </select>
+
         <button type="submit">Add List</button>
       </form>
     </div>
@@ -43,7 +51,15 @@
       <h3>Add a Matched List</h3>
       <form (ngSubmit)="onAddList()">
         <label for="listName">List Name:</label>
+        <!--suppress XmlDuplicatedId -->
         <input type="text" id="listName" [(ngModel)]="listName" name="listName" required>
+
+        <label for="factionSelect">Faction:</label>
+        <!--suppress XmlDuplicatedId -->
+        <select id="factionSelect" [(ngModel)]="selectedFaction" name="factionSelect" required>
+          <option *ngFor="let faction of factions" [value]="faction">{{ faction }}</option>
+        </select>
+
         <button type="submit">Add List</button>
       </form>
     </div>

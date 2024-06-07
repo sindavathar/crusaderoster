@@ -18,9 +18,9 @@ export class StorageService {
     localStorage.setItem(this.storageKey, JSON.stringify(lists));
   }
 
-  addList(type: 'matched' | 'crusade', listName: string): void {
+  addList(type: 'matched' | 'crusade', listName: string, faction: string): void {
     const lists = this.getLists();
-    lists[type].push(listName);
+    lists[type].push(`${listName} (${faction})`);
     lists[type].sort();
     this.saveLists(lists);
   }
@@ -40,44 +40,37 @@ export class StorageService {
 
   getFactions(): Faction[] {
     const localFactions = localStorage.getItem(this.factionsKey);
-    if (localFactions) {
-      const factions = JSON.parse(localFactions);
-      factions.forEach((faction: Faction) => {
-        this.sortUnits(faction);
-      });
-      return factions.sort((a: Faction, b: Faction) => a.name.localeCompare(b.name));
-    }
-    return [];
+    return localFactions ? JSON.parse(localFactions).sort((a: Faction, b: Faction) => a.name.localeCompare(b.name)) : [];
   }
 
   saveFactions(factions: Faction[]): void {
-    factions.forEach((faction: Faction) => {
-      this.sortUnits(faction);
-    });
     factions.sort((a: Faction, b: Faction) => a.name.localeCompare(b.name));
     localStorage.setItem(this.factionsKey, JSON.stringify(factions));
   }
 
   addFaction(factionName: string): void {
     const factions = this.getFactions();
-    factions.push({ name: factionName, characters: [], battleline: [], dedicatedTransports: [], otherDatasheets: [] });
+    factions.push({
+      name: factionName,
+      detachments: [],
+      characters: [],
+      battleline: [],
+      dedicatedTransports: [],
+      otherDatasheets: []
+    });
     this.saveFactions(factions);
   }
+
 
   addUnit(factionName: string, category: keyof Faction, unitName: string): void {
     const factions = this.getFactions();
     const faction = factions.find(f => f.name === factionName);
-    if (faction) {
+    if (faction && faction[category] !== undefined) {
       (faction[category] as string[]).push(unitName);
-      this.sortUnits(faction);
+      (faction[category] as string[]).sort();
       this.saveFactions(factions);
+    } else {
+      console.error(`Category ${category} not found in faction ${factionName}`);
     }
-  }
-
-  private sortUnits(faction: Faction): void {
-    faction.characters.sort();
-    faction.battleline.sort();
-    faction.dedicatedTransports.sort();
-    faction.otherDatasheets.sort();
   }
 }

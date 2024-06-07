@@ -10,10 +10,11 @@ import { Faction } from '../../services/faction.model'; // Import the interface
 export class AdminComponent implements OnInit {
   factions: Faction[] = [];
   newFactionName: string = '';
+  newDetachmentName: string = '';
   newUnitName: string = '';
   selectedFaction: Faction | null = null;
   selectedCategory: keyof Faction | '' = '';
-  categories: (keyof Faction)[] = ['characters', 'battleline', 'dedicatedTransports', 'otherDatasheets']; // Define categories here
+  categories: (keyof Faction)[] = ['detachments', 'characters', 'battleline', 'dedicatedTransports', 'otherDatasheets']; // Define categories here
 
   constructor(private storageService: StorageService) {}
 
@@ -32,6 +33,8 @@ export class AdminComponent implements OnInit {
       this.loadFactions();
     }
   }
+
+
 
   addUnit(faction: Faction, category: keyof Faction) {
     if (this.newUnitName) {

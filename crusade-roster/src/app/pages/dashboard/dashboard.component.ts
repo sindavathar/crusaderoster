@@ -10,6 +10,8 @@ import { StorageService } from '../../services/storage.service'; // Import the s
 export class DashboardComponent implements OnInit {
   isCrusadeList: boolean = false; // Default to 'Matched'
   listName: string = '';
+  selectedFaction: string = ''; // Add a variable for selected faction
+  factions: string[] = []; // Add a variable to hold faction names
   matchedLists: string[] = [];
   crusadeLists: string[] = [];
 
@@ -17,6 +19,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loadLists();
+    this.loadFactions(); // Load factions when component initializes
   }
 
   navigateTo(category: string) {
@@ -25,23 +28,29 @@ export class DashboardComponent implements OnInit {
 
   toggleListType() {
     this.listName = ''; // Clear the input field when toggling
+    this.selectedFaction = ''; // Clear the faction selection when toggling
   }
 
   onAddList() {
     if (this.isCrusadeList) {
-      this.storageService.addList('crusade', this.listName);
-      this.crusadeLists.push(this.listName);
+      this.storageService.addList('crusade', this.listName, this.selectedFaction);
+      this.crusadeLists.push(`${this.listName} (${this.selectedFaction})`);
     } else {
-      this.storageService.addList('matched', this.listName);
-      this.matchedLists.push(this.listName);
+      this.storageService.addList('matched', this.listName, this.selectedFaction);
+      this.matchedLists.push(`${this.listName} (${this.selectedFaction})`);
     }
     this.listName = ''; // Clear the input field after adding the list
+    this.selectedFaction = ''; // Clear the faction selection after adding the list
   }
 
   loadLists() {
     const lists = this.storageService.getLists();
     this.matchedLists = lists.matched;
     this.crusadeLists = lists.crusade;
+  }
+
+  loadFactions() {
+    this.factions = this.storageService.getFactions().map(f => f.name); // Get faction names
   }
 
   renameList(type: 'matched' | 'crusade', index: number) {
