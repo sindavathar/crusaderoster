@@ -16,8 +16,8 @@ export class DashboardComponent implements OnInit {
   customPoints: number | null = null; // Add a variable for custom points
   factions: string[] = []; // Add a variable to hold faction names
   detachments: string[] = []; // Add a variable to hold detachment names
-  matchedLists: string[] = [];
-  crusadeLists: string[] = [];
+  matchedLists: { id: string, name: string }[] = [];
+  crusadeLists: { id: string, name: string }[] = [];
 
   constructor(private router: Router, private storageService: StorageService) {} // Inject the service
 
@@ -43,10 +43,10 @@ export class DashboardComponent implements OnInit {
 
     if (this.isCrusadeList) {
       this.storageService.addList('crusade', this.listName, this.selectedFaction, this.selectedDetachment, points);
-      this.crusadeLists.push(`${this.listName} (${this.selectedFaction}) - ${points} points|${this.selectedDetachment}`);
+      this.loadLists(); // Reload lists to update the view
     } else {
       this.storageService.addList('matched', this.listName, this.selectedFaction, this.selectedDetachment, points);
-      this.matchedLists.push(`${this.listName} (${this.selectedFaction}) - ${points} points|${this.selectedDetachment}`);
+      this.loadLists(); // Reload lists to update the view
     }
     this.listName = ''; // Clear the input field after adding the list
     this.selectedFaction = ''; // Clear the faction selection after adding the list
@@ -78,36 +78,28 @@ export class DashboardComponent implements OnInit {
     const newName = prompt('Enter new name');
     if (newName) {
       this.storageService.renameList(type, index, newName);
-      if (type === 'crusade') {
-        this.crusadeLists[index] = newName;
-      } else {
-        this.matchedLists[index] = newName;
-      }
+      this.loadLists(); // Reload lists to update the view
     }
   }
 
   deleteList(type: 'matched' | 'crusade', index: number) {
     this.storageService.deleteList(type, index);
+    this.loadLists(); // Reload lists to update the view
+  }
+
+  viewList(type: string, id: string) {
     if (type === 'crusade') {
-      this.crusadeLists.splice(index, 1);
+      this.router.navigate([`/crusade-list/${id}`]);
     } else {
-      this.matchedLists.splice(index, 1);
+      this.router.navigate([`/matched-list/${id}`]);
     }
   }
 
-  viewList(type: string, name: string) {
-    if (type === 'crusade') {
-      this.router.navigate([`/crusade-list/${name}`]);
-    } else {
-      this.router.navigate([`/matched-list/${name}`]);
-    }
+  getListName(list: { id: string, name: string }): string {
+    return list.name.split('|')[0];
   }
 
-  getListName(list: string): string {
-    return list.split('|')[0];
-  }
-
-  getListDetachment(list: string): string {
-    return list.split('|')[1];
+  getListDetachment(list: { id: string, name: string }): string {
+    return list.name.split('|')[1];
   }
 }

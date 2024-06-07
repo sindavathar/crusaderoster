@@ -5,8 +5,8 @@ import { LayoutComponent } from './pages/layout/layout.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { CrusadeListComponent } from './pages/crusade-list/crusade-list.component';
 import { MatchedListComponent } from './pages/matched-list/matched-list.component';
+import { MatchedListAddUnitComponent } from './pages/matched-list-add-unit/matched-list-add-unit.component';
 import { AdminComponent } from './pages/admin/admin.component';
-
 
 const routes: Routes = [
   {
@@ -27,12 +27,16 @@ const routes: Routes = [
         component:DashboardComponent
       },
       {
-        path: 'crusade-list/:name',
+        path: 'crusade-list/:id',
         component: CrusadeListComponent
       },
       {
-        path: 'matched-list/:name',
+        path: 'matched-list/:id',
         component: MatchedListComponent
+      },
+      {
+        path: 'matched-list-add-unit/:faction/:category/:listId',
+        component: MatchedListAddUnitComponent
       },
       {
         path: 'admin',

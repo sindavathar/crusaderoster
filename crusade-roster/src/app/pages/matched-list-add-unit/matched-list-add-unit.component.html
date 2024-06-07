@@ -1,0 +1,10 @@
+<div class="matched-list-add-unit-container">
+  <h2>{{ category.toString() | titlecase }} in {{ factionName }}</h2>
+
+  <ul>
+    <li *ngFor="let unit of units">
+      {{ unit }}<span *ngIf="selectedUnits[unit]"> ({{ selectedUnits[unit] }})</span>
+      <button (click)="addUnit(unit)">+</button>
+    </li>
+  </ul>
+</div>

@@ -11,11 +11,7 @@
       <p>Manage and view your crusade lists.</p>
       <ul>
         <li *ngFor="let list of crusadeLists; let i = index">
-          <span (click)="viewList('crusade', list)">
-            {{ getListName(list) }}
-            <br>
-            <em>{{ getListDetachment(list) }}</em>
-          </span>
+          <span (click)="viewList('crusade', list.id)">{{ getListName(list) }}</span>
           <button (click)="renameList('crusade', i)">Rename</button>
           <button (click)="deleteList('crusade', i)">Delete</button>
         </li>
@@ -25,9 +21,11 @@
       <h3>Add a Crusade List</h3>
       <form (ngSubmit)="onAddList()">
         <label for="listName">List Name:</label>
+        <!--suppress XmlDuplicatedId -->
         <input type="text" id="listName" [(ngModel)]="listName" name="listName" required>
 
         <label for="factionSelect">Faction:</label>
+        <!--suppress XmlDuplicatedId -->
         <select id="factionSelect" [(ngModel)]="selectedFaction" name="factionSelect" (change)="onFactionChange()" required>
           <option *ngFor="let faction of factions" [value]="faction">{{ faction }}</option>
         </select>
@@ -62,11 +60,7 @@
       <p>Manage and view your matched lists.</p>
       <ul>
         <li *ngFor="let list of matchedLists; let i = index">
-          <span (click)="viewList('matched', list)">
-            {{ getListName(list) }}
-            <br>
-            <em>{{ getListDetachment(list) }}</em>
-          </span>
+          <span (click)="viewList('matched', list.id)">{{ getListName(list) }}</span>
           <button (click)="renameList('matched', i)">Rename</button>
           <button (click)="deleteList('matched', i)">Delete</button>
         </li>
@@ -76,9 +70,11 @@
       <h3>Add a Matched List</h3>
       <form (ngSubmit)="onAddList()">
         <label for="listName">List Name:</label>
+        <!--suppress XmlDuplicatedId -->
         <input type="text" id="listName" [(ngModel)]="listName" name="listName" required>
 
         <label for="factionSelect">Faction:</label>
+        <!--suppress XmlDuplicatedId -->
         <select id="factionSelect" [(ngModel)]="selectedFaction" name="factionSelect" (change)="onFactionChange()" required>
           <option *ngFor="let faction of factions" [value]="faction">{{ faction }}</option>
         </select>

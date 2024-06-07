@@ -4,6 +4,8 @@
   <div class="category" *ngFor="let category of categories">
     <h3>{{ category | titlecase }}</h3>
     <button (click)="addUnitToCategory(category)">+</button>
-
+    <ul>
+      <li *ngFor="let unit of units[category]">{{ unit }}</li>
+    </ul>
   </div>
 </div>

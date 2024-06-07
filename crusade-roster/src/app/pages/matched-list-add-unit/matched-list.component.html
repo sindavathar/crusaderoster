@@ -1,9 +1,0 @@
-<div class="matched-list-container">
-  <h2>Matched List: {{ listName }}</h2>
-
-  <div class="category" *ngFor="let category of categories">
-    <h3>{{ category | titlecase }}</h3>
-    <button (click)="addUnitToCategory(category)">+</button>
-
-  </div>
-</div>

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { StorageService } from '../../services/storage.service'; // Import the service
-import { Faction } from '../../services/faction.model'; // Import the interface
+import { ActivatedRoute, Router } from '@angular/router';
+import { StorageService } from '../../services/storage.service';
+import { Faction } from '../../services/faction.model';
 
 @Component({
   selector: 'app-matched-list',
@@ -9,29 +9,43 @@ import { Faction } from '../../services/faction.model'; // Import the interface
   styleUrls: ['./matched-list.component.css']
 })
 export class MatchedListComponent implements OnInit {
+  listId: string = '';
   listName: string = '';
-  faction: Faction | null = null;
-  categories: (keyof Faction)[] = ['characters', 'battleline', 'dedicatedTransports', 'otherDatasheets'];
+  factionName: string = '';
+  units: { [key in keyof Omit<Faction, 'name'>]: string[] } = {
+    detachments: [],
+    characters: [],
+    battleline: [],
+    dedicatedTransports: [],
+    otherDatasheets: []
+  };
+  categories: (keyof Omit<Faction, 'name'>)[] = ['detachments', 'characters', 'battleline', 'dedicatedTransports', 'otherDatasheets'];
 
-  constructor(private route: ActivatedRoute, private storageService: StorageService) {}
+  constructor(private route: ActivatedRoute, private storageService: StorageService, private router: Router) {}
 
   ngOnInit() {
-    const listDetails = this.route.snapshot.paramMap.get('name') || '';
-    const factionName = listDetails.split(' (')[1].split(')')[0]; // Extract the faction name from the list name
-    this.faction = this.storageService.getFactions().find(f => f.name === factionName) || null;
-    this.listName = listDetails.split(' - ')[0]; // Extract the list name
+    this.listId = this.route.snapshot.paramMap.get('id') || '';
+    this.loadListDetails();
+    this.loadUnits();
   }
 
-  getUnits(category: keyof Faction): string[] {
-    return this.faction ? (this.faction[category] as string[]) : [];
-  }
-
-  addUnitToCategory(category: keyof Faction) {
-    const unitName = prompt(`Enter new unit name for ${category}`);
-    if (unitName && this.faction) {
-      this.storageService.addUnit(this.faction.name, category, unitName);
-      // Refresh the faction data after adding the unit
-      this.faction = this.storageService.getFactions().find(f => f.name === this.faction!.name) || null;
+  loadListDetails() {
+    const lists = this.storageService.getLists();
+    const allLists = [...lists.matched, ...lists.crusade];
+    const list = allLists.find(list => list.id === this.listId);
+    if (list) {
+      this.listName = list.name;
+      this.factionName = list.name.split('(')[1].split(')')[0];
+    } else {
+      console.error(`List ${this.listId} not found`);
     }
+  }
+
+  loadUnits() {
+    this.units = this.storageService.getUnitsForList(this.listId);
+  }
+
+  addUnitToCategory(category: keyof Omit<Faction, 'name'>) {
+    this.router.navigate(['/matched-list-add-unit', this.factionName, category, this.listId]);
   }
 }

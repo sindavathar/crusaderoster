@@ -3,18 +3,18 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { MatchedListComponent } from './matched-list.component';
+import { MatchedListAddUnitComponent } from './matched-list-add-unit.component';
 
 @NgModule({
   declarations: [
-    MatchedListComponent
+    MatchedListAddUnitComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
     RouterModule.forChild([
-      { path: '', component: MatchedListComponent }
+      { path: '', component: MatchedListAddUnitComponent }
     ])
   ]
 })
-export class MatchedListModule { }
+export class MatchedListAddUnitModule { }

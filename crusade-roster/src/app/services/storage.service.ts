@@ -9,26 +9,27 @@ export class StorageService {
   private storageKey = 'angular17lists';
   private factionsKey = 'angular17factions';
 
-  getLists(): { matched: string[], crusade: string[] } {
+  getLists(): { matched: { id: string, name: string }[], crusade: { id: string, name: string }[] } {
     const localLists = localStorage.getItem(this.storageKey);
     return localLists ? JSON.parse(localLists) : { matched: [], crusade: [] };
   }
 
-  saveLists(lists: { matched: string[], crusade: string[] }): void {
+  saveLists(lists: { matched: { id: string, name: string }[], crusade: { id: string, name: string }[] }): void {
     localStorage.setItem(this.storageKey, JSON.stringify(lists));
   }
 
   addList(type: 'matched' | 'crusade', listName: string, faction: string, detachment: string, points: string | number): void {
     const lists = this.getLists();
-    lists[type].push(`${listName} (${faction}) - ${points} points|${detachment}`);
-    lists[type].sort();
+    const newList = { id: this.generateUUID(), name: `${listName} (${faction}) - ${points} points|${detachment}` };
+    lists[type].push(newList);
+    lists[type].sort((a, b) => a.name.localeCompare(b.name));
     this.saveLists(lists);
   }
 
   renameList(type: 'matched' | 'crusade', index: number, newName: string): void {
     const lists = this.getLists();
-    lists[type][index] = newName;
-    lists[type].sort();
+    lists[type][index].name = newName;
+    lists[type].sort((a, b) => a.name.localeCompare(b.name));
     this.saveLists(lists);
   }
 
@@ -119,5 +120,23 @@ export class StorageService {
     } else {
       console.error(`Category ${category} not found in faction ${factionName}`);
     }
+  }
+
+  getUnitsForList(listId: string): { [key in keyof Omit<Faction, 'name'>]: string[] } {
+    const listUnits = localStorage.getItem(`units_${listId}`);
+    return listUnits ? JSON.parse(listUnits) : { detachments: [], characters: [], battleline: [], dedicatedTransports: [], otherDatasheets: [] };
+  }
+
+  addUnitToList(listId: string, unitName: string, category: keyof Omit<Faction, 'name'>): void {
+    const units = this.getUnitsForList(listId);
+    units[category].push(unitName);
+    localStorage.setItem(`units_${listId}`, JSON.stringify(units));
+  }
+
+  generateUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
   }
 }
