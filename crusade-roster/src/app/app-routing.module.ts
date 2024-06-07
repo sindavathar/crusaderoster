@@ -4,6 +4,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { LayoutComponent } from './pages/layout/layout.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { CrusadeListComponent } from './pages/crusade-list/crusade-list.component';
+import { MatchedListComponent } from './pages/matched-list/matched-list.component';
 
 
 const routes: Routes = [
@@ -27,6 +28,10 @@ const routes: Routes = [
       {
         path: 'crusade-list/:name',
         component: CrusadeListComponent
+      },
+      {
+        path: 'matched-list/:name',
+        component: MatchedListComponent
       }
     ]
   }
