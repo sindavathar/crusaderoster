@@ -11,7 +11,11 @@
       <p>Manage and view your crusade lists.</p>
       <ul>
         <li *ngFor="let list of crusadeLists; let i = index">
-          <span (click)="viewList('crusade', list)">{{ list }}</span>
+          <span (click)="viewList('crusade', list)">
+            {{ getListName(list) }}
+            <br>
+            <em>{{ getListDetachment(list) }}</em>
+          </span>
           <button (click)="renameList('crusade', i)">Rename</button>
           <button (click)="deleteList('crusade', i)">Delete</button>
         </li>
@@ -21,14 +25,31 @@
       <h3>Add a Crusade List</h3>
       <form (ngSubmit)="onAddList()">
         <label for="listName">List Name:</label>
-        <!--suppress XmlDuplicatedId -->
         <input type="text" id="listName" [(ngModel)]="listName" name="listName" required>
 
         <label for="factionSelect">Faction:</label>
-        <!--suppress XmlDuplicatedId -->
-        <select id="factionSelect" [(ngModel)]="selectedFaction" name="factionSelect" required>
+        <select id="factionSelect" [(ngModel)]="selectedFaction" name="factionSelect" (change)="onFactionChange()" required>
           <option *ngFor="let faction of factions" [value]="faction">{{ faction }}</option>
         </select>
+
+        <label for="detachmentSelect">Detachment:</label>
+        <select id="detachmentSelect" [(ngModel)]="selectedDetachment" name="detachmentSelect" required>
+          <option *ngFor="let detachment of detachments" [value]="detachment">{{ detachment }}</option>
+        </select>
+
+        <label for="pointsSelect">Points:</label>
+        <select id="pointsSelect" [(ngModel)]="selectedPoints" name="pointsSelect" required>
+          <option value="500">500</option>
+          <option value="1000">1000</option>
+          <option value="2000">2000</option>
+          <option value="3000">3000</option>
+          <option value="custom">Custom</option>
+        </select>
+
+        <div *ngIf="selectedPoints === 'custom'">
+          <label for="customPoints">Custom Points:</label>
+          <input type="number" id="customPoints" [(ngModel)]="customPoints" name="customPoints" required>
+        </div>
 
         <button type="submit">Add List</button>
       </form>
@@ -41,7 +62,11 @@
       <p>Manage and view your matched lists.</p>
       <ul>
         <li *ngFor="let list of matchedLists; let i = index">
-          <span (click)="viewList('matched', list)">{{ list }}</span>
+          <span (click)="viewList('matched', list)">
+            {{ getListName(list) }}
+            <br>
+            <em>{{ getListDetachment(list) }}</em>
+          </span>
           <button (click)="renameList('matched', i)">Rename</button>
           <button (click)="deleteList('matched', i)">Delete</button>
         </li>
@@ -51,14 +76,31 @@
       <h3>Add a Matched List</h3>
       <form (ngSubmit)="onAddList()">
         <label for="listName">List Name:</label>
-        <!--suppress XmlDuplicatedId -->
         <input type="text" id="listName" [(ngModel)]="listName" name="listName" required>
 
         <label for="factionSelect">Faction:</label>
-        <!--suppress XmlDuplicatedId -->
-        <select id="factionSelect" [(ngModel)]="selectedFaction" name="factionSelect" required>
+        <select id="factionSelect" [(ngModel)]="selectedFaction" name="factionSelect" (change)="onFactionChange()" required>
           <option *ngFor="let faction of factions" [value]="faction">{{ faction }}</option>
         </select>
+
+        <label for="detachmentSelect">Detachment:</label>
+        <select id="detachmentSelect" [(ngModel)]="selectedDetachment" name="detachmentSelect" required>
+          <option *ngFor="let detachment of detachments" [value]="detachment">{{ detachment }}</option>
+        </select>
+
+        <label for="pointsSelect">Points:</label>
+        <select id="pointsSelect" [(ngModel)]="selectedPoints" name="pointsSelect" required>
+          <option value="500">500</option>
+          <option value="1000">1000</option>
+          <option value="2000">2000</option>
+          <option value="3000">3000</option>
+          <option value="custom">Custom</option>
+        </select>
+
+        <div *ngIf="selectedPoints === 'custom'">
+          <label for="customPoints">Custom Points:</label>
+          <input type="number" id="customPoints" [(ngModel)]="customPoints" name="customPoints" required>
+        </div>
 
         <button type="submit">Add List</button>
       </form>

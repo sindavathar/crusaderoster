@@ -31,16 +31,57 @@ export class AdminComponent implements OnInit {
       this.storageService.addFaction(this.newFactionName);
       this.newFactionName = '';
       this.loadFactions();
+      // Keep the newly added faction selected
+      this.selectedFaction = this.factions.find(f => f.name === this.newFactionName) || null;
     }
   }
 
+  renameFaction(faction: Faction) {
+    const newName = prompt('Enter new name for the faction', faction.name);
+    if (newName && newName !== faction.name) {
+      this.storageService.renameFaction(faction.name, newName);
+      this.loadFactions();
+      this.selectedFaction = this.factions.find(f => f.name === newName) || null;
+    }
+  }
 
+  deleteFaction(faction: Faction) {
+    if (confirm(`Are you sure you want to delete the faction ${faction.name}?`)) {
+      this.storageService.deleteFaction(faction.name);
+      this.loadFactions();
+      this.selectedFaction = null;
+    }
+  }
 
   addUnit(faction: Faction, category: keyof Faction) {
     if (this.newUnitName) {
       this.storageService.addUnit(faction.name, category, this.newUnitName);
       this.newUnitName = '';
       this.loadFactions();
+      // Keep the selected faction and category after adding a unit
+      this.selectedFaction = this.factions.find(f => f.name === faction.name) || null;
+      this.selectedCategory = category;
+    }
+  }
+
+  renameUnit(faction: Faction, category: keyof Faction, unitName: string) {
+    const newName = prompt('Enter new name for the unit', unitName);
+    if (newName && newName !== unitName) {
+      this.storageService.renameUnit(faction.name, category, unitName, newName);
+      this.loadFactions();
+      // Keep the selected faction and category after renaming a unit
+      this.selectedFaction = this.factions.find(f => f.name === faction.name) || null;
+      this.selectedCategory = category;
+    }
+  }
+
+  deleteUnit(faction: Faction, category: keyof Faction, unitName: string) {
+    if (confirm(`Are you sure you want to delete ${unitName}?`)) {
+      this.storageService.deleteUnit(faction.name, category, unitName);
+      this.loadFactions();
+      // Keep the selected faction and category after deleting a unit
+      this.selectedFaction = this.factions.find(f => f.name === faction.name) || null;
+      this.selectedCategory = category;
     }
   }
 

@@ -18,9 +18,9 @@ export class StorageService {
     localStorage.setItem(this.storageKey, JSON.stringify(lists));
   }
 
-  addList(type: 'matched' | 'crusade', listName: string, faction: string): void {
+  addList(type: 'matched' | 'crusade', listName: string, faction: string, detachment: string, points: string | number): void {
     const lists = this.getLists();
-    lists[type].push(`${listName} (${faction})`);
+    lists[type].push(`${listName} (${faction}) - ${points} points|${detachment}`);
     lists[type].sort();
     this.saveLists(lists);
   }
@@ -61,6 +61,22 @@ export class StorageService {
     this.saveFactions(factions);
   }
 
+  renameFaction(oldName: string, newName: string): void {
+    const factions = this.getFactions();
+    const faction = factions.find(f => f.name === oldName);
+    if (faction) {
+      faction.name = newName;
+      this.saveFactions(factions);
+    } else {
+      console.error(`Faction ${oldName} not found`);
+    }
+  }
+
+  deleteFaction(factionName: string): void {
+    let factions = this.getFactions();
+    factions = factions.filter(f => f.name !== factionName);
+    this.saveFactions(factions);
+  }
 
   addUnit(factionName: string, category: keyof Faction, unitName: string): void {
     const factions = this.getFactions();
@@ -69,6 +85,37 @@ export class StorageService {
       (faction[category] as string[]).push(unitName);
       (faction[category] as string[]).sort();
       this.saveFactions(factions);
+    } else {
+      console.error(`Category ${category} not found in faction ${factionName}`);
+    }
+  }
+
+  renameUnit(factionName: string, category: keyof Faction, oldUnitName: string, newUnitName: string): void {
+    const factions = this.getFactions();
+    const faction = factions.find(f => f.name === factionName);
+    if (faction && faction[category] !== undefined) {
+      const units = faction[category] as string[];
+      const index = units.indexOf(oldUnitName);
+      if (index !== -1) {
+        units[index] = newUnitName;
+        units.sort();
+        this.saveFactions(factions);
+      }
+    } else {
+      console.error(`Category ${category} not found in faction ${factionName}`);
+    }
+  }
+
+  deleteUnit(factionName: string, category: keyof Faction, unitName: string): void {
+    const factions = this.getFactions();
+    const faction = factions.find(f => f.name === factionName);
+    if (faction && faction[category] !== undefined) {
+      const units = faction[category] as string[];
+      const index = units.indexOf(unitName);
+      if (index !== -1) {
+        units.splice(index, 1);
+        this.saveFactions(factions);
+      }
     } else {
       console.error(`Category ${category} not found in faction ${factionName}`);
     }

@@ -8,15 +8,23 @@
 
   <div *ngFor="let faction of factions" class="faction">
     <h3 (click)="toggleFaction(faction)">{{ faction.name }}</h3>
+    <button (click)="renameFaction(faction)">Rename</button>
+    <button (click)="deleteFaction(faction)">Delete</button>
     <div *ngIf="selectedFaction === faction">
       <div class="category" *ngFor="let category of categories">
         <h4 (click)="toggleCategory(faction, category)">{{ category | titlecase }}</h4>
         <div *ngIf="selectedCategory === category">
           <ul>
-            <li *ngFor="let unit of getUnits(faction, category)">{{ unit }}</li>
+            <li *ngFor="let unit of getUnits(faction, category)">
+              {{ unit }}
+              <button (click)="renameUnit(faction, category, unit)">Rename</button>
+              <button (click)="deleteUnit(faction, category, unit)">Delete</button>
+            </li>
           </ul>
-          <input type="text" [(ngModel)]="newUnitName" placeholder="New Unit Name">
-          <button (click)="addUnit(faction, category)">Add Unit</button>
+          <input type="text" [(ngModel)]="newUnitName" placeholder="New {{ category === 'detachments' ? 'Detachment' : 'Unit' }} Name">
+          <button (click)="addUnit(faction, category)">
+            {{ category === 'detachments' ? 'Add Detachment' : 'Add Unit' }}
+          </button>
         </div>
       </div>
     </div>
