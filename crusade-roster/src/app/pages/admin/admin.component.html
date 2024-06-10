@@ -26,9 +26,9 @@
         <div *ngIf="selectedCategory === category">
           <ul>
             <li *ngFor="let unit of getUnits(faction, category)">
-              {{ unit }}
-              <button (click)="renameUnit(faction, category, unit)">Rename</button>
-              <button (click)="deleteUnit(faction, category, unit)">Delete</button>
+              <a [href]="unit.url" target="_blank">{{ unit.name }}</a>
+              <button (click)="renameUnit(faction, category, unit.name)">Rename</button>
+              <button (click)="deleteUnit(faction, category, unit.name)">Delete</button>
             </li>
           </ul>
           <input type="text" [(ngModel)]="newUnitName" placeholder="New {{ category === 'detachments' ? 'Detachment' : 'Unit' }} Name">

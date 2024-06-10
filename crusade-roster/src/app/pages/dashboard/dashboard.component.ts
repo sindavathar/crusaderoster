@@ -58,7 +58,7 @@ export class DashboardComponent implements OnInit {
   onFactionChange() {
     const selectedFaction = this.storageService.getFactions().find(f => f.name === this.selectedFaction);
     if (selectedFaction) {
-      this.detachments = selectedFaction.detachments;
+      this.detachments = selectedFaction.detachments.map(detachment => detachment.name);
     } else {
       this.detachments = [];
     }

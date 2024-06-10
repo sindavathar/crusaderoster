@@ -17,7 +17,7 @@ export class AdminComponent implements OnInit {
   selectedCategory: keyof Faction | '' = '';
   importUrl: string = '';
   unitImportUrl: string = '';
-  categories: (keyof Faction)[] = ['detachments', 'characters', 'battleline', 'dedicatedTransports', 'otherDatasheets']; // Define categories here
+  categories: (keyof Faction)[] = ['detachments', 'characters', 'battleline', 'dedicatedTransports', 'fortifications', 'otherDatasheets']; // Define categories here
 
   constructor(private storageService: StorageService) {}
 
@@ -31,7 +31,7 @@ export class AdminComponent implements OnInit {
 
   addFaction() {
     if (this.newFactionName) {
-      this.storageService.addFaction(this.newFactionName);
+      this.storageService.addFaction(this.newFactionName, '');
       this.newFactionName = '';
       this.loadFactions();
       // Keep the newly added faction selected
@@ -58,7 +58,7 @@ export class AdminComponent implements OnInit {
 
   addUnit(faction: Faction, category: keyof Faction) {
     if (this.newUnitName) {
-      this.storageService.addUnit(faction.name, category, this.newUnitName);
+      this.storageService.addUnit(faction.name, category, this.newUnitName, '');
       this.newUnitName = '';
       this.loadFactions();
       // Keep the selected faction and category after adding a unit
@@ -70,7 +70,7 @@ export class AdminComponent implements OnInit {
   renameUnit(faction: Faction, category: keyof Faction, unitName: string) {
     const newName = prompt('Enter new name for the unit', unitName);
     if (newName && newName !== unitName) {
-      this.storageService.renameUnit(faction.name, category, unitName, newName);
+      this.storageService.renameUnit(faction.name, category, unitName, newName, '');
       this.loadFactions();
       // Keep the selected faction and category after renaming a unit
       this.selectedFaction = this.factions.find(f => f.name === faction.name) || null;
@@ -101,8 +101,8 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  getUnits(faction: Faction, category: keyof Faction): string[] {
-    return faction[category] as string[];
+  getUnits(faction: Faction, category: keyof Faction): { name: string, url: string }[] {
+    return faction[category] as { name: string, url: string }[];
   }
 
   async importFactions() {
@@ -122,7 +122,7 @@ export class AdminComponent implements OnInit {
         }
 
         for (const factionName of factionNames) {
-          this.storageService.addFaction(factionName);
+          this.storageService.addFaction(factionName, '');
         }
 
         this.loadFactions();
@@ -140,34 +140,47 @@ export class AdminComponent implements OnInit {
         const response = await axios.get(`http://localhost:3000/proxy?url=${encodeURIComponent(this.unitImportUrl)}`);
         const content = response.data;
 
-        // Regex to find sections by category
-        const sectionRegex = /<div class="BreakInsideAvoid"><div class="i5 ArmyType_line "><span class="contentColor"><b class="BatRole">([^<]+)<\/b><\/span><\/div>(.*?)<\/div>(?=<div class="i5 ArmyType_line ">|<\/div><div style="margin-bottom:8px;">|<\/div><\/div>)/gs;
+        // Regex to match each category and its units
+        const categoryRegex = /<div class="i5 ArmyType_line "><span class="contentColor"><b class="BatRole">([^<]+)<\/b><\/span><\/div>(.*?)<div style="margin-bottom:8px;">/gs;
+        const unitRegex = /<div class="i15 ArmyType_line [^"]*"[^>]*>.*?<a href="([^"]+)" class="contentColor"[^>]*>([^<]+)<\/a><\/div>/g;
 
-        let sectionMatch;
-        while ((sectionMatch = sectionRegex.exec(content)) !== null) {
-          const category = sectionMatch[1].trim().toLowerCase();
-          const sectionContent = sectionMatch[2];
+        const categoryMapping: { [key: string]: keyof Faction } = {
+          'Characters': 'characters',
+          'Battleline': 'battleline',
+          'Dedicated Transports': 'dedicatedTransports',
+          'Fortifications': 'fortifications',
+          'Other': 'otherDatasheets'
+        };
 
-          if (category === 'characters') {  // Only process the 'characters' category for now
-            const unitRegex = /<div class="i15 ArmyType_line "><a href="([^"]+)" class="contentColor"[^>]*>([^<]+)<\/a><\/div>/g;
-            let unitMatch;
-            while ((unitMatch = unitRegex.exec(sectionContent)) !== null) {
-              const unitUrl = unitMatch[1].trim();
-              const unitName = unitMatch[2].trim();
+        const categories = [...content.matchAll(categoryRegex)];
 
-              // Check if the unit already exists in the storage
-              if (!this.unitExists(faction, 'characters', unitName)) {
-                this.storageService.addUnit(faction.name, 'characters', unitName);
-                console.log(`added characters:${unitName} (${unitUrl})`);
-              } else {
-                console.log(`exists characters:${unitName}`);
+        if (categories.length > 0) {
+          for (const categoryMatch of categories) {
+            const categoryName = categoryMatch[1].trim();
+            const categoryKey = categoryMapping[categoryName] || null;
+            const categoryContent = categoryMatch[2];
+            if (categoryKey && this.categories.includes(categoryKey)) {
+              let unitMatch;
+              while ((unitMatch = unitRegex.exec(categoryContent)) !== null) {
+                if (!unitMatch[0].includes('sLegendary')) {
+                  const unitUrl = `https://wahapedia.ru${unitMatch[1].trim()}`;
+                  const unitName = unitMatch[2].trim();
+                  if (!this.unitExists(faction, categoryKey, unitName)) {
+                    this.storageService.addUnit(faction.name, categoryKey, unitName, unitUrl);
+                    console.log(`Added ${categoryKey}: ${unitName}`);
+                  } else {
+                    console.log(`${categoryKey} already exists: ${unitName}`);
+                  }
+                }
               }
             }
           }
+          this.loadFactions();
+          alert('Units imported successfully!');
+        } else {
+          console.log('No categories found.');
+          alert('No categories found.');
         }
-
-        this.loadFactions();
-        alert('Units imported successfully!');
       } catch (error) {
         console.error('Error importing units:', error);
         alert('Error importing units. Please check the console for details.');
@@ -176,8 +189,10 @@ export class AdminComponent implements OnInit {
   }
 
   unitExists(faction: Faction, category: keyof Faction, unitName: string): boolean {
-    return this.storageService.getFactions()
-      .find(f => f.name === faction.name)?.[category]
-      .includes(unitName) || false;
+    const units = this.storageService.getFactions().find(f => f.name === faction.name)?.[category];
+    if (Array.isArray(units)) {
+      return units.some((unit: { name: string }) => unit.name === unitName);
+    }
+    return false;
   }
 }

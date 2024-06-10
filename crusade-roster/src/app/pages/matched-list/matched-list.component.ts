@@ -1,8 +1,12 @@
-// matched-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { StorageService } from '../../services/storage.service';
 import { Faction } from '../../services/faction.model';
+
+interface ListItem {
+  id: string;
+  name: string;
+}
 
 @Component({
   selector: 'app-matched-list',
@@ -13,14 +17,15 @@ export class MatchedListComponent implements OnInit {
   listName: string = '';
   factionName: string = '';
   listId: string = '';
-  units: { [key in keyof Omit<Faction, 'name'>]: string[] } = {
+  units: { [key in keyof Omit<Faction, 'name' | 'url'>]: { name: string; url: string }[] } = {
     detachments: [],
     characters: [],
     battleline: [],
     dedicatedTransports: [],
+    fortifications: [],
     otherDatasheets: []
   };
-  categories: (keyof Omit<Faction, 'name'>)[] = ['detachments', 'characters', 'battleline', 'dedicatedTransports', 'otherDatasheets'];
+  categories: (keyof Omit<Faction, 'name' | 'url'>)[] = ['detachments', 'characters', 'battleline', 'dedicatedTransports', 'fortifications', 'otherDatasheets'];
 
   constructor(private route: ActivatedRoute, private storageService: StorageService, private router: Router) {}
 
@@ -32,7 +37,7 @@ export class MatchedListComponent implements OnInit {
   loadUnits() {
     this.units = this.storageService.getUnitsForList(this.listId);
     const lists = this.storageService.getLists();
-    const list = lists.matched.find(list => list.id === this.listId) || lists.crusade.find(list => list.id === this.listId);
+    const list = lists.matched.find((list: ListItem) => list.id === this.listId) || lists.crusade.find((list: ListItem) => list.id === this.listId);
     if (list) {
       this.listName = list.name.split('|')[0];
       this.factionName = list.name.split('(')[1].split(')')[0];
@@ -41,11 +46,11 @@ export class MatchedListComponent implements OnInit {
     }
   }
 
-  addUnitToCategory(category: keyof Omit<Faction, 'name'>) {
+  addUnitToCategory(category: keyof Omit<Faction, 'name' | 'url'>) {
     this.router.navigate(['/matched-list-add-unit', this.factionName, category, this.listId]);
   }
 
-  removeUnitFromCategory(category: keyof Omit<Faction, 'name'>, unitName: string) {
+  removeUnitFromCategory(category: keyof Omit<Faction, 'name' | 'url'>, unitName: string) {
     this.storageService.removeUnitFromList(this.listId, unitName, category);
     this.loadUnits(); // Refresh the list after removing the unit
   }
