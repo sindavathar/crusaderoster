@@ -6,11 +6,21 @@
     <button (click)="addFaction()">Add Faction</button>
   </div>
 
+  <div class="import-factions">
+    <input type="text" [(ngModel)]="importUrl" placeholder="Import URL">
+    <button (click)="importFactions()">Import Factions</button>
+    <br/><i>https://wahapedia.ru/wh40k10ed/the-rules/core-rules/</i>
+  </div>
+
   <div *ngFor="let faction of factions" class="faction">
     <h3 (click)="toggleFaction(faction)">{{ faction.name }}</h3>
     <button (click)="renameFaction(faction)">Rename</button>
     <button (click)="deleteFaction(faction)">Delete</button>
     <div *ngIf="selectedFaction === faction">
+      <div class="import-units">
+        <input type="text" [(ngModel)]="unitImportUrl" placeholder="Import Units URL">
+        <button (click)="importUnits(faction)">Import Units</button>
+      </div>
       <div class="category" *ngFor="let category of categories">
         <h4 (click)="toggleCategory(faction, category)">{{ category | titlecase }}</h4>
         <div *ngIf="selectedCategory === category">

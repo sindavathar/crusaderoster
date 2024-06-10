@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -29,6 +30,7 @@ import { TitlecasePipe } from './pipes/titlecase.pipe'; // Import the custom pip
     BrowserModule,
     MatSlideToggleModule,
     CommonModule,
+    HttpClientModule,
     AppRoutingModule,
     FormsModule
   ],

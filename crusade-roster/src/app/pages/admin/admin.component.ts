@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StorageService } from '../../services/storage.service';
 import { Faction } from '../../services/faction.model'; // Import the interface
+import axios from 'axios';
 
 @Component({
   selector: 'app-admin',
@@ -14,6 +15,8 @@ export class AdminComponent implements OnInit {
   newUnitName: string = '';
   selectedFaction: Faction | null = null;
   selectedCategory: keyof Faction | '' = '';
+  importUrl: string = '';
+  unitImportUrl: string = '';
   categories: (keyof Faction)[] = ['detachments', 'characters', 'battleline', 'dedicatedTransports', 'otherDatasheets']; // Define categories here
 
   constructor(private storageService: StorageService) {}
@@ -100,5 +103,81 @@ export class AdminComponent implements OnInit {
 
   getUnits(faction: Faction, category: keyof Faction): string[] {
     return faction[category] as string[];
+  }
+
+  async importFactions() {
+    if (this.importUrl) {
+      try {
+        const response = await axios.get(`http://localhost:3000/proxy?url=${encodeURIComponent(this.importUrl)}`);
+        const content = response.data;
+        const regex = /<a href="\/wh40k10ed\/factions\/[^"]+"[^>]*>([^<]+)<\/a>/g;
+        let match;
+        const factionNames: string[] = [];
+
+        while ((match = regex.exec(content)) !== null) {
+          const factionName = match[1].trim();
+          if (!this.factions.find(f => f.name === factionName)) {
+            factionNames.push(factionName);
+          }
+        }
+
+        for (const factionName of factionNames) {
+          this.storageService.addFaction(factionName);
+        }
+
+        this.loadFactions();
+        alert('Factions imported successfully!');
+      } catch (error) {
+        console.error('Error importing factions:', error);
+        alert('Error importing factions. Please check the console for details.');
+      }
+    }
+  }
+
+  async importUnits(faction: Faction) {
+    if (this.unitImportUrl) {
+      try {
+        const response = await axios.get(`http://localhost:3000/proxy?url=${encodeURIComponent(this.unitImportUrl)}`);
+        const content = response.data;
+
+        // Regex to find sections by category
+        const sectionRegex = /<div class="BreakInsideAvoid"><div class="i5 ArmyType_line "><span class="contentColor"><b class="BatRole">([^<]+)<\/b><\/span><\/div>(.*?)<\/div>(?=<div class="i5 ArmyType_line ">|<\/div><div style="margin-bottom:8px;">|<\/div><\/div>)/gs;
+
+        let sectionMatch;
+        while ((sectionMatch = sectionRegex.exec(content)) !== null) {
+          const category = sectionMatch[1].trim().toLowerCase();
+          const sectionContent = sectionMatch[2];
+
+          if (category === 'characters') {  // Only process the 'characters' category for now
+            const unitRegex = /<div class="i15 ArmyType_line "><a href="([^"]+)" class="contentColor"[^>]*>([^<]+)<\/a><\/div>/g;
+            let unitMatch;
+            while ((unitMatch = unitRegex.exec(sectionContent)) !== null) {
+              const unitUrl = unitMatch[1].trim();
+              const unitName = unitMatch[2].trim();
+
+              // Check if the unit already exists in the storage
+              if (!this.unitExists(faction, 'characters', unitName)) {
+                this.storageService.addUnit(faction.name, 'characters', unitName);
+                console.log(`added characters:${unitName} (${unitUrl})`);
+              } else {
+                console.log(`exists characters:${unitName}`);
+              }
+            }
+          }
+        }
+
+        this.loadFactions();
+        alert('Units imported successfully!');
+      } catch (error) {
+        console.error('Error importing units:', error);
+        alert('Error importing units. Please check the console for details.');
+      }
+    }
+  }
+
+  unitExists(faction: Faction, category: keyof Faction, unitName: string): boolean {
+    return this.storageService.getFactions()
+      .find(f => f.name === faction.name)?.[category]
+      .includes(unitName) || false;
   }
 }
