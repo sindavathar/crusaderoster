@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Faction } from './faction.model'; // Import the interface
 import { UnitDetailsService } from './unit-details.service';
-import { UnitDetails } from "./unit-details.model"; // Import the UnitDetails model
+import { UnitDetails } from './unit-details.model'; // Import the UnitDetails model
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageService {
-
   private factionsKey = 'angular17factions';
   private storageKey = 'angular17lists';
 
