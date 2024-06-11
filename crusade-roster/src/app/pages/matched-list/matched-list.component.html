@@ -1,12 +1,13 @@
 <div class="matched-list-container">
   <h2>Matched List: {{ listName }}</h2>
+  <h3>Total Points: {{ totalPoints }}</h3> <!-- Display total points -->
 
   <div class="category" *ngFor="let category of categories">
     <h3>{{ category | titlecase }}</h3>
     <button (click)="addUnitToCategory(category)">+</button>
     <ul>
       <li *ngFor="let unit of units[category]">
-        <a [href]="unit.url" target="_blank">{{ unit.name }}</a>
+        <a [href]="unit.url" target="_blank">{{ unit.name }} ({{ unit.points }})</a> <!-- Display unit points -->
         <button (click)="removeUnitFromCategory(category, unit.name)">Remove</button>
       </li>
     </ul>

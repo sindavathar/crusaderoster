@@ -17,6 +17,7 @@ export interface Composition {
   models: string;
   points: string;
   equipment?: string;
+  modelsNames?: string;
 }
 
 export interface Keywords {

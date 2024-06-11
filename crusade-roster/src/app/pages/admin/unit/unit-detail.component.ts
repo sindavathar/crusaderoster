@@ -20,5 +20,42 @@ export class UnitDetailComponent implements OnInit {
   ngOnInit(): void {
     this.unitName = this.route.snapshot.paramMap.get('unitName') || '';
     this.unitDetails = this.storageService.getUnitDetails(this.unitName);
+
+    if (!this.unitDetails) {
+      this.unitDetails = {
+        name: this.unitName,
+        baseSize: 'N/A',
+        stats: {
+          movement: 'N/A',
+          toughness: 'N/A',
+          save: 'N/A',
+          wounds: 'N/A',
+          leadership: 'N/A',
+          objectiveControl: 'N/A',
+          invulnerableSave: 'N/A'
+        },
+        rangedWeapons: [],
+        meleeWeapons: [],
+        abilities: {
+          core: [],
+          faction: [],
+          detachment: [],
+          unit: []
+        },
+        composition: {
+          models: 'N/A',
+          points: 'N/A',
+          equipment: 'N/A',
+          modelsNames: 'N/A'
+        },
+        rules: [],
+        keywords: {
+          core: [],
+          faction: [],
+          detachment: [],
+          unit: []
+        }
+      };
+    }
   }
 }

@@ -119,13 +119,20 @@ export class UnitDetailsService {
   private extractComposition(content: string): UnitDetails['composition'] {
     const composition = {
       models: 'N/A',
-      points: '0'
+      points: '0',
+      equipment: 'N/A',
+      modelsNames: 'N/A'
     };
 
     const tableRegex = /<tr><td>([^<]+)<\/td><td><div class="PriceTag">([^<]+)<\/div><\/td><\/tr>/g;
+    const equipmentRegex = /<b>([^<]+) is equipped with:<\/b>([^<]+)\./g;
+    const modelRegex = /<ul class="dsUl"><li><b>([^<]+)<\/b><\/li><\/ul>/g;
+
     let match;
     let models = '';
     let points = '';
+    let equipment = '';
+    let modelsNames = '';
 
 
     while ((match = tableRegex.exec(content)) !== null) {
@@ -141,9 +148,28 @@ export class UnitDetailsService {
       points += price;
     }
 
+
+
+    while ((match = equipmentRegex.exec(content)) !== null) {
+      if (equipment.length > 0) {
+        equipment += ' ';
+      }
+      equipment += `${match[1].trim()} is equipped with: ${match[2].trim()}.`;
+    }
+
+    while ((match = modelRegex.exec(content)) !== null) {
+      if (modelsNames.length > 0) {
+        modelsNames += ', ';
+      }
+      modelsNames += match[1].replace(/<span class="kwb">([^<]+)<\/span>/g, '$1').trim(); // Remove the span tags around keywords
+    }
+
     if (models.length > 0) {
       composition.models = models;
       composition.points = points;
+      composition.equipment = equipment;
+      composition.modelsNames = modelsNames;
+
     }
 
     return composition;
