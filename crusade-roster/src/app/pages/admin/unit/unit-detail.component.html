@@ -3,6 +3,7 @@
   <p><strong>Base Size:</strong> {{ unitDetails?.baseSize || 'N/A' }}</p>
   <p><strong>Points:</strong> {{ unitDetails?.composition?.points || 'N/A' }}</p>
   <p><strong>Number of Models:</strong> {{ unitDetails?.composition?.models || 'N/A' }}</p>
+  <p><strong>Equipment:</strong> {{ unitDetails?.composition?.equipment || 'N/A' }}</p>
 
   <p><strong>Stats:</strong></p>
   <ul>
@@ -15,14 +16,14 @@
     <li *ngIf="unitDetails?.stats?.invulnerableSave"><strong>Invulnerable Save:</strong> {{ unitDetails?.stats?.invulnerableSave || 'N/A' }}</li>
   </ul>
 
-  <p *ngIf="unitDetails?.rangedWeapons?.length"><strong>Ranged Weapons:</strong></p>
+  <p *ngIf="unitDetails?.rangedWeapons"><strong>Ranged Weapons:</strong></p>
   <ul>
     <li *ngFor="let weapon of unitDetails?.rangedWeapons">
       {{ weapon.name || 'N/A' }}: Range {{ weapon.range || 'N/A' }}, Type {{ weapon.type || 'N/A' }}, Strength {{ weapon.strength || 'N/A' }}, AP {{ weapon.armorPenetration || 'N/A' }}, Damage {{ weapon.damage || 'N/A' }}, Rules: {{ weapon.rules || 'N/A' }}
     </li>
   </ul>
 
-  <p *ngIf="unitDetails?.meleeWeapons?.length"><strong>Melee Weapons:</strong></p>
+  <p *ngIf="unitDetails?.meleeWeapons"><strong>Melee Weapons:</strong></p>
   <ul>
     <li *ngFor="let weapon of unitDetails?.meleeWeapons">
       {{ weapon.name || 'N/A' }}: Type {{ weapon.type || 'N/A' }}, Strength {{ weapon.strength || 'N/A' }}, AP {{ weapon.armorPenetration || 'N/A' }}, Damage {{ weapon.damage || 'N/A' }}, Rules: {{ weapon.rules || 'N/A' }}

@@ -15,7 +15,8 @@ export interface Ability {
 
 export interface Composition {
   models: string;
-  points: number;
+  points: string;
+  equipment?: string;
 }
 
 export interface Keywords {

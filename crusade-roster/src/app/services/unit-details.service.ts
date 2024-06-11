@@ -117,12 +117,38 @@ export class UnitDetailsService {
   }
 
   private extractComposition(content: string): UnitDetails['composition'] {
-    // Placeholder implementation
-    return {
+    const composition = {
       models: 'N/A',
-      points: 0
+      points: '0'
     };
+
+    const tableRegex = /<tr><td>([^<]+)<\/td><td><div class="PriceTag">([^<]+)<\/div><\/td><\/tr>/g;
+    let match;
+    let models = '';
+    let points = '';
+
+
+    while ((match = tableRegex.exec(content)) !== null) {
+      const modelInfo = match[1].trim().match(/\d+/); // Extract only numeric part from the modelInfo
+      const modelCount = modelInfo ? modelInfo[0] : '0'; // Default to "0" if no numbers are found
+      const price = match[2].trim(); // Contains the price
+
+      if (models.length > 0) {
+        models += ', ';
+        points += ', ';
+      }
+      models += modelCount;
+      points += price;
+    }
+
+    if (models.length > 0) {
+      composition.models = models;
+      composition.points = points;
+    }
+
+    return composition;
   }
+
 
   private extractRules(content: string): string[] {
     // Placeholder implementation
