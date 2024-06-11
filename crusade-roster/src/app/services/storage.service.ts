@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Faction } from './faction.model'; // Import the interface
+import { UnitDetailsService } from './unit-details.service';
+import {UnitDetails} from "./unit-import/unit-details.model"; // Import the UnitDetailsService
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +9,9 @@ import { Faction } from './faction.model'; // Import the interface
 export class StorageService {
 
   private factionsKey = 'angular17factions';
-  private storageKey = 'angular17lists'; // Add the storageKey property
+  private storageKey = 'angular17lists';
+
+  constructor(private unitDetailsService: UnitDetailsService) {} // Inject the UnitDetailsService
 
   getFactions(): Faction[] {
     const localFactions = localStorage.getItem(this.factionsKey);
@@ -99,7 +103,7 @@ export class StorageService {
 
   getUnitsForList(listId: string): { [key in keyof Omit<Faction, 'name' | 'url'>]: { name: string; url: string }[] } {
     const listUnits = localStorage.getItem(`units_${listId}`);
-    return listUnits ? JSON.parse(listUnits) : { detachments: [], characters: [], battleline: [], dedicatedTransports: [], otherDatasheets: [] };
+    return listUnits ? JSON.parse(listUnits) : { detachments: [], characters: [], battleline: [], dedicatedTransports: [], fortifications: [], otherDatasheets: [] };
   }
 
   addUnitToList(listId: string, unitName: string, unitUrl: string, category: keyof Omit<Faction, 'name' | 'url'>): void {
@@ -148,6 +152,16 @@ export class StorageService {
     const lists = this.getLists();
     lists[type].splice(index, 1);
     this.saveLists(lists);
+  }
+
+  // Method to save unit details using UnitDetailsService
+  saveUnitDetails(unitName: string, unitDetails: UnitDetails): void {
+    this.unitDetailsService.saveUnitDetails(unitName, unitDetails);
+  }
+
+  // Method to get unit details using UnitDetailsService
+  getUnitDetails(unitName: string): UnitDetails | null {
+    return this.unitDetailsService.getUnitDetails(unitName);
   }
 
   generateUUID(): string {
