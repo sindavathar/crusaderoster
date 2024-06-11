@@ -5,7 +5,7 @@ import { LayoutComponent } from './pages/layout/layout.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { CrusadeListComponent } from './pages/crusade-list/crusade-list.component';
 import { MatchedListComponent } from './pages/matched-list/matched-list.component';
-import { MatchedListAddUnitComponent } from './pages/matched-list-add-unit/matched-list-add-unit.component';
+import { MatchedListAddUnitComponent } from './pages/matched-list/matched-list-add-unit/matched-list-add-unit.component';
 import { AdminComponent } from './pages/admin/admin.component';
 import { UnitDetailComponent } from './pages/admin/unit/unit-detail.component';
 

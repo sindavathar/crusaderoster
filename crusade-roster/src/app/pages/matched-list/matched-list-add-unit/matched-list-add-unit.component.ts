@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { StorageService } from '../../services/storage.service';
-import { Faction } from '../../services/faction.model';
+import { StorageService } from '../../../services/storage.service';
+import { Faction } from '../../../services/faction.model';
 
 @Component({
   selector: 'app-matched-list-add-unit',
