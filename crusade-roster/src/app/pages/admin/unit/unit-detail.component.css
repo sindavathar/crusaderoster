@@ -1,0 +1,11 @@
+.unit-detail-container {
+  margin: 20px;
+}
+
+.unit-detail-container h2 {
+  margin-bottom: 10px;
+}
+
+.unit-detail-container p, .unit-detail-container ul {
+  margin: 10px 0;
+}

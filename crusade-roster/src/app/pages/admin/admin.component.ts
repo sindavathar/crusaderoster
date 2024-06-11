@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StorageService } from '../../services/storage.service';
 import { Faction } from '../../services/faction.model'; // Import the interface
-import { UnitDetails } from '../../services/unit-import/unit-details.model'; // Import the UnitDetails interface
+import { UnitDetailsService } from '../../services/unit-details.service'; // Import the UnitDetailsService
 import axios from 'axios';
 
 @Component({
@@ -20,7 +20,7 @@ export class AdminComponent implements OnInit {
   unitImportUrl: string = '';
   categories: (keyof Faction)[] = ['detachments', 'characters', 'battleline', 'dedicatedTransports', 'fortifications', 'otherDatasheets']; // Define categories here
 
-  constructor(private storageService: StorageService) {}
+  constructor(private storageService: StorageService, private unitDetailsService: UnitDetailsService) {}
 
   ngOnInit(): void {
     this.loadFactions();
@@ -173,7 +173,7 @@ export class AdminComponent implements OnInit {
                     console.log(`${categoryKey} already exists: ${unitName}`);
                   }
                   // New function call to import unit details
-                  await this.importUnitDetails(unitUrl);
+                  await this.unitDetailsService.importUnitDetails(unitUrl, unitName); // Pass the name
                 }
               }
             }
@@ -189,57 +189,6 @@ export class AdminComponent implements OnInit {
         alert('Error importing units. Please check the console for details.');
       }
     }
-  }
-
-  // New function to import unit details
-  async importUnitDetails(unitUrl: string) {
-    try {
-      // Replace this URL with the actual URL to fetch unit details
-      const response = await axios.get(`http://localhost:3000/proxy?url=${encodeURIComponent(unitUrl)}`);
-      const content = response.data;
-      const unitDetails: UnitDetails = this.parseUnitDetails(content);
-      if (unitDetails) {
-        this.storageService.saveUnitDetails(unitDetails.name, unitDetails);
-        console.log(`Details imported for unit: ${unitDetails.name}`);
-      }
-    } catch (error) {
-      console.error(`Error importing details for unit:`, error);
-    }
-  }
-
-  // Placeholder function to parse unit details from the content
-  parseUnitDetails(content: string): UnitDetails {
-    // Add your parsing logic here
-    return {
-      name: '',
-      baseSize: '',
-      stats: {
-        movement: '',
-        toughness: '',
-        save: '',
-        wounds: '',
-        leadership: '',
-        objectiveControl: '',
-        invulnerableSave: ''
-      },
-      abilities: {
-        core: [],
-        faction: [],
-        detachment: [],
-        unit: []
-      },
-      composition: {
-        models: '',
-        points: 0
-      },
-      rules: [],
-      keywords: {
-        core: [],
-        faction: [],
-        detachment: [],
-        unit: []
-      }
-    };
   }
 
   unitExists(faction: Faction, category: keyof Faction, unitName: string): boolean {

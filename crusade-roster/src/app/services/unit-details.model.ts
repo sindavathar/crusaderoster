@@ -1,5 +1,3 @@
-// import-unit-details.model.ts
-
 export interface Weapon {
   name: string;
   range: string;
@@ -7,6 +5,7 @@ export interface Weapon {
   strength: string;
   armorPenetration: string;
   damage: string;
+  rules: string;
 }
 
 export interface Ability {

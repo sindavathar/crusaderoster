@@ -7,6 +7,8 @@ import { CrusadeListComponent } from './pages/crusade-list/crusade-list.componen
 import { MatchedListComponent } from './pages/matched-list/matched-list.component';
 import { MatchedListAddUnitComponent } from './pages/matched-list-add-unit/matched-list-add-unit.component';
 import { AdminComponent } from './pages/admin/admin.component';
+import { UnitDetailComponent } from './pages/admin/unit/unit-detail.component';
+
 
 const routes: Routes = [
   {
@@ -41,6 +43,10 @@ const routes: Routes = [
       {
         path: 'admin',
         component: AdminComponent
+      },
+      {
+        path: 'admin/unit/:unitName',
+        component: UnitDetailComponent
       }
     ]
   }

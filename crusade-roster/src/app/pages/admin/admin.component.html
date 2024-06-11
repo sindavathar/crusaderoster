@@ -26,7 +26,7 @@
         <div *ngIf="selectedCategory === category">
           <ul>
             <li *ngFor="let unit of getUnits(faction, category)">
-              <a [href]="unit.url" target="_blank">{{ unit.name }}</a>
+              <a [routerLink]="['/admin/unit', unit.name]">{{ unit.name }}</a>
               <button (click)="renameUnit(faction, category, unit.name)">Rename</button>
               <button (click)="deleteUnit(faction, category, unit.name)">Delete</button>
             </li>

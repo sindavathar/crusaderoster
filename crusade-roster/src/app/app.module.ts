@@ -11,6 +11,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { LayoutComponent } from './pages/layout/layout.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { AdminComponent } from './pages/admin/admin.component';
+import { UnitModule } from './pages/admin/unit/unit-detail.model'; // Import the UnitModule
 import { MatchedListComponent } from './pages/matched-list/matched-list.component';
 import { MatchedListAddUnitComponent } from './pages/matched-list-add-unit/matched-list-add-unit.component';
 import { TitlecasePipe } from './pipes/titlecase.pipe'; // Import the custom pipe
@@ -32,7 +33,8 @@ import { TitlecasePipe } from './pipes/titlecase.pipe'; // Import the custom pip
     CommonModule,
     HttpClientModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    UnitModule
   ],
   providers: [],
   bootstrap: [AppComponent]

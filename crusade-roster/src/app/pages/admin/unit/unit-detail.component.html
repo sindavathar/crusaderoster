@@ -1,0 +1,62 @@
+<div>
+  <h2>{{ unitDetails?.name || 'N/A' }}</h2>
+  <p><strong>Base Size:</strong> {{ unitDetails?.baseSize || 'N/A' }}</p>
+  <p><strong>Points:</strong> {{ unitDetails?.composition?.points || 'N/A' }}</p>
+  <p><strong>Number of Models:</strong> {{ unitDetails?.composition?.models || 'N/A' }}</p>
+
+  <p><strong>Stats:</strong></p>
+  <ul>
+    <li><strong>Movement:</strong> {{ unitDetails?.stats?.movement || 'N/A' }}</li>
+    <li><strong>Toughness:</strong> {{ unitDetails?.stats?.toughness || 'N/A' }}</li>
+    <li><strong>Save:</strong> {{ unitDetails?.stats?.save || 'N/A' }}</li>
+    <li><strong>Wounds:</strong> {{ unitDetails?.stats?.wounds || 'N/A' }}</li>
+    <li><strong>Leadership:</strong> {{ unitDetails?.stats?.leadership || 'N/A' }}</li>
+    <li><strong>Objective Control:</strong> {{ unitDetails?.stats?.objectiveControl || 'N/A' }}</li>
+    <li *ngIf="unitDetails?.stats?.invulnerableSave"><strong>Invulnerable Save:</strong> {{ unitDetails?.stats?.invulnerableSave || 'N/A' }}</li>
+  </ul>
+
+  <p *ngIf="unitDetails?.rangedWeapons?.length"><strong>Ranged Weapons:</strong></p>
+  <ul>
+    <li *ngFor="let weapon of unitDetails?.rangedWeapons">
+      {{ weapon.name || 'N/A' }}: Range {{ weapon.range || 'N/A' }}, Type {{ weapon.type || 'N/A' }}, Strength {{ weapon.strength || 'N/A' }}, AP {{ weapon.armorPenetration || 'N/A' }}, Damage {{ weapon.damage || 'N/A' }}, Rules: {{ weapon.rules || 'N/A' }}
+    </li>
+  </ul>
+
+  <p *ngIf="unitDetails?.meleeWeapons?.length"><strong>Melee Weapons:</strong></p>
+  <ul>
+    <li *ngFor="let weapon of unitDetails?.meleeWeapons">
+      {{ weapon.name || 'N/A' }}: Type {{ weapon.type || 'N/A' }}, Strength {{ weapon.strength || 'N/A' }}, AP {{ weapon.armorPenetration || 'N/A' }}, Damage {{ weapon.damage || 'N/A' }}, Rules: {{ weapon.rules || 'N/A' }}
+    </li>
+  </ul>
+
+  <p><strong>Abilities:</strong></p>
+  <ul>
+    <li *ngFor="let ability of unitDetails?.abilities?.core || []">
+      <strong>Core</strong>: {{ ability.name || 'N/A' }} - {{ ability.description || 'N/A' }}
+    </li>
+    <li *ngFor="let ability of unitDetails?.abilities?.faction || []">
+      <strong>Faction</strong>: {{ ability.name || 'N/A' }} - {{ ability.description || 'N/A' }}
+    </li>
+    <li *ngFor="let ability of unitDetails?.abilities?.detachment || []">
+      <strong>Detachment</strong>: {{ ability.name || 'N/A' }} - {{ ability.description || 'N/A' }}
+    </li>
+    <li *ngFor="let ability of unitDetails?.abilities?.unit || []">
+      <strong>Unit</strong>: {{ ability.name || 'N/A' }} - {{ ability.description || 'N/A' }}
+    </li>
+  </ul>
+
+  <p><strong>Rules:</strong></p>
+  <ul>
+    <li *ngFor="let rule of unitDetails?.rules || []">
+      {{ rule || 'N/A' }}
+    </li>
+  </ul>
+
+  <p><strong>Keywords:</strong></p>
+  <ul>
+    <li><strong>Core:</strong> {{ (unitDetails?.keywords?.core || []).join(', ') || 'N/A' }}</li>
+    <li><strong>Faction:</strong> {{ (unitDetails?.keywords?.faction || []).join(', ') || 'N/A' }}</li>
+    <li><strong>Detachment:</strong> {{ (unitDetails?.keywords?.detachment || []).join(', ') || 'N/A' }}</li>
+    <li><strong>Unit:</strong> {{ (unitDetails?.keywords?.unit || []).join(', ') || 'N/A' }}</li>
+  </ul>
+</div>

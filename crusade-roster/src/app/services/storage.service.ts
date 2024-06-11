@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Faction } from './faction.model'; // Import the interface
 import { UnitDetailsService } from './unit-details.service';
-import {UnitDetails} from "./unit-import/unit-details.model"; // Import the UnitDetailsService
+import { UnitDetails } from "./unit-details.model"; // Import the UnitDetails model
 
 @Injectable({
   providedIn: 'root'
