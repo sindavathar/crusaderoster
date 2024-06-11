@@ -1,5 +1,6 @@
 <div class="matched-list-container">
-  <h2>Matched List: {{ listName }}</h2>
+  <h2>Matched List: {{ listName }} ({{ factionName }}) - {{ maxPoints }} points</h2>
+  <h3>Detachment: {{ detachment }}</h3>
   <h3>Total Points: {{ totalPoints }}/{{ maxPoints }} points</h3> <!-- Display total points and max points -->
 
   <div class="category" *ngFor="let category of categories">
@@ -8,7 +9,7 @@
     <ul>
       <li *ngFor="let unit of units[category]">
         <a [href]="unit.url" target="_blank">{{ unit.name }} ({{ unit.points }})</a> <!-- Display unit points -->
-        <button (click)="removeUnitFromCategory(category, unit.name)">Remove</button>
+        <button (click)="removeUnitFromCategory(category, unit.id)">Remove</button>
       </li>
     </ul>
   </div>

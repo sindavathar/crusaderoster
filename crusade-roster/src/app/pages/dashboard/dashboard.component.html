@@ -10,10 +10,12 @@
       <h3>Crusade Lists</h3>
       <p>Manage and view your crusade lists.</p>
       <ul>
-        <li *ngFor="let list of crusadeLists; let i = index">
-          <span (click)="viewList('crusade', list.id)">{{ getListName(list) }}</span>
-          <button (click)="renameList('crusade', i)">Rename</button>
-          <button (click)="deleteList('crusade', i)">Delete</button>
+        <li *ngFor="let list of crusadeLists">
+          <span (click)="viewList('crusade', list.id)">
+            {{ getListName(list) }} ({{ getListFaction(list) }}) - {{ getListPoints(list) }} points | {{ getListDetachment(list) }}
+          </span>
+          <button (click)="renameList('crusade', list.id)">Rename</button>
+          <button (click)="deleteList('crusade', list.id)">Delete</button>
         </li>
       </ul>
     </div>
@@ -21,11 +23,9 @@
       <h3>Add a Crusade List</h3>
       <form (ngSubmit)="onAddList()">
         <label for="listName">List Name:</label>
-        <!--suppress XmlDuplicatedId -->
         <input type="text" id="listName" [(ngModel)]="listName" name="listName" required>
 
         <label for="factionSelect">Faction:</label>
-        <!--suppress XmlDuplicatedId -->
         <select id="factionSelect" [(ngModel)]="selectedFaction" name="factionSelect" (change)="onFactionChange()" required>
           <option *ngFor="let faction of factions" [value]="faction">{{ faction }}</option>
         </select>
@@ -59,10 +59,12 @@
       <h3>Matched Lists</h3>
       <p>Manage and view your matched lists.</p>
       <ul>
-        <li *ngFor="let list of matchedLists; let i = index">
-          <span (click)="viewList('matched', list.id)">{{ getListName(list) }}</span>
-          <button (click)="renameList('matched', i)">Rename</button>
-          <button (click)="deleteList('matched', i)">Delete</button>
+        <li *ngFor="let list of matchedLists">
+          <span (click)="viewList('matched', list.id)">
+            {{ getListName(list) }} ({{ getListFaction(list) }}) - {{ getListPoints(list) }} points | {{ getListDetachment(list) }}
+          </span>
+          <button (click)="renameList('matched', list.id)">Rename</button>
+          <button (click)="deleteList('matched', list.id)">Delete</button>
         </li>
       </ul>
     </div>
@@ -70,11 +72,9 @@
       <h3>Add a Matched List</h3>
       <form (ngSubmit)="onAddList()">
         <label for="listName">List Name:</label>
-        <!--suppress XmlDuplicatedId -->
         <input type="text" id="listName" [(ngModel)]="listName" name="listName" required>
 
         <label for="factionSelect">Faction:</label>
-        <!--suppress XmlDuplicatedId -->
         <select id="factionSelect" [(ngModel)]="selectedFaction" name="factionSelect" (change)="onFactionChange()" required>
           <option *ngFor="let faction of factions" [value]="faction">{{ faction }}</option>
         </select>

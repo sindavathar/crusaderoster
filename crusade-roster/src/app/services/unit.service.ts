@@ -7,7 +7,7 @@ import { UnitDetails } from './unit-details.model';
   providedIn: 'root'
 })
 export class UnitService {
-  constructor(private unitDetailsService: UnitDetailsService) {} // Inject the UnitDetailsService
+  constructor(private unitDetailsService: UnitDetailsService) {}
 
   addUnit(factionName: string, category: keyof Faction, unitName: string, unitUrl: string): void {
     const factions = this.getFactions();
@@ -74,5 +74,19 @@ export class UnitService {
   private saveFactions(factions: Faction[]): void {
     factions.sort((a: Faction, b: Faction) => a.name.localeCompare(b.name));
     localStorage.setItem('angular17factions', JSON.stringify(factions));
+  }
+
+  removeUnitFromList(listId: string, unitName: string, category: keyof Omit<Faction, 'name' | 'url'>): void {
+    const units = this.getUnitsForList(listId);
+    const index = units[category].findIndex(unit => unit.name === unitName);
+    if (index !== -1) {
+      units[category].splice(index, 1);
+      localStorage.setItem(`units_${listId}`, JSON.stringify(units));
+    }
+  }
+
+  private getUnitsForList(listId: string): { [key in keyof Omit<Faction, 'name' | 'url'>]: { name: string; url: string }[] } {
+    const listUnits = localStorage.getItem(`units_${listId}`);
+    return listUnits ? JSON.parse(listUnits) : { detachments: [], characters: [], battleline: [], dedicatedTransports: [], fortifications: [], otherDatasheets: [] };
   }
 }

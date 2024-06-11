@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { StorageService } from '../../services/storage.service'; // Import the service
+import { ListService } from '../../services/list.service';
+import { FactionService } from '../../services/faction.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,10 +17,10 @@ export class DashboardComponent implements OnInit {
   customPoints: number | null = null; // Add a variable for custom points
   factions: string[] = []; // Add a variable to hold faction names
   detachments: string[] = []; // Add a variable to hold detachment names
-  matchedLists: { id: string, name: string }[] = [];
-  crusadeLists: { id: string, name: string }[] = [];
+  matchedLists: { id: string, name: string, faction: string, points: string, detachment: string }[] = [];
+  crusadeLists: { id: string, name: string, faction: string, points: string, detachment: string }[] = [];
 
-  constructor(private router: Router, private storageService: StorageService) {} // Inject the service
+  constructor(private router: Router, private listService: ListService, private factionService: FactionService) {} // Inject the services
 
   ngOnInit() {
     this.loadLists();
@@ -42,10 +43,10 @@ export class DashboardComponent implements OnInit {
     let points = this.selectedPoints === 'custom' && this.customPoints ? this.customPoints : this.selectedPoints;
 
     if (this.isCrusadeList) {
-      this.storageService.addList('crusade', this.listName, this.selectedFaction, this.selectedDetachment, points);
+      this.listService.addList('crusade', this.listName, this.selectedFaction, this.selectedDetachment, points);
       this.loadLists(); // Reload lists to update the view
     } else {
-      this.storageService.addList('matched', this.listName, this.selectedFaction, this.selectedDetachment, points);
+      this.listService.addList('matched', this.listName, this.selectedFaction, this.selectedDetachment, points);
       this.loadLists(); // Reload lists to update the view
     }
     this.listName = ''; // Clear the input field after adding the list
@@ -56,7 +57,7 @@ export class DashboardComponent implements OnInit {
   }
 
   onFactionChange() {
-    const selectedFaction = this.storageService.getFactions().find(f => f.name === this.selectedFaction);
+    const selectedFaction = this.factionService.getFactions().find(f => f.name === this.selectedFaction);
     if (selectedFaction) {
       this.detachments = selectedFaction.detachments.map(detachment => detachment.name);
     } else {
@@ -65,25 +66,25 @@ export class DashboardComponent implements OnInit {
   }
 
   loadLists() {
-    const lists = this.storageService.getLists();
+    const lists = this.listService.getLists();
     this.matchedLists = lists.matched;
     this.crusadeLists = lists.crusade;
   }
 
   loadFactions() {
-    this.factions = this.storageService.getFactions().map(f => f.name); // Get faction names
+    this.factions = this.factionService.getFactions().map(f => f.name); // Get faction names
   }
 
-  renameList(type: 'matched' | 'crusade', index: number) {
+  renameList(type: 'matched' | 'crusade', id: string) {
     const newName = prompt('Enter new name');
     if (newName) {
-      this.storageService.renameList(type, index, newName);
+      this.listService.renameList(type, id, newName);
       this.loadLists(); // Reload lists to update the view
     }
   }
 
-  deleteList(type: 'matched' | 'crusade', index: number) {
-    this.storageService.deleteList(type, index);
+  deleteList(type: 'matched' | 'crusade', id: string) {
+    this.listService.deleteList(type, id);
     this.loadLists(); // Reload lists to update the view
   }
 
@@ -96,10 +97,18 @@ export class DashboardComponent implements OnInit {
   }
 
   getListName(list: { id: string, name: string }): string {
-    return list.name.split('|')[0];
+    return list.name;
   }
 
-  getListDetachment(list: { id: string, name: string }): string {
-    return list.name.split('|')[1];
+  getListFaction(list: { id: string, faction: string }): string {
+    return list.faction;
+  }
+
+  getListPoints(list: { id: string, points: string }): string {
+    return list.points;
+  }
+
+  getListDetachment(list: { id: string, detachment: string }): string {
+    return list.detachment;
   }
 }

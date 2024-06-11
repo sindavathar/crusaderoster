@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { StorageService } from '../../services/storage.service';
+import { ListService } from '../../services/list.service';
+import { UnitService } from '../../services/unit.service';
 import { UnitDetailsService } from '../../services/unit-details.service';
 import { UnitDetails } from '../../services/unit-details.model';
 import { Faction } from '../../services/faction.model';
@@ -14,7 +15,9 @@ export class MatchedListComponent implements OnInit {
   listId: string = '';
   listName: string = '';
   factionName: string = '';
-  units: { [key in keyof Omit<Faction, 'name' | 'url'>]: { name: string, url: string, points: number }[] } = {
+  maxPoints: number = 0;
+  detachment: string = '';
+  units: { [key in keyof Omit<Faction, 'name' | 'url'>]: { name: string, url: string, points: number, id: string }[] } = {
     detachments: [],
     characters: [],
     battleline: [],
@@ -24,12 +27,12 @@ export class MatchedListComponent implements OnInit {
   };
   categories: (keyof Omit<Faction, 'name' | 'url'>)[] = ['detachments', 'characters', 'battleline', 'dedicatedTransports', 'fortifications', 'otherDatasheets'];
   totalPoints: number = 0;
-  maxPoints: number = 0;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private storageService: StorageService,
+    private listService: ListService,
+    private unitService: UnitService,
     private unitDetailsService: UnitDetailsService
   ) {}
 
@@ -39,21 +42,14 @@ export class MatchedListComponent implements OnInit {
   }
 
   loadList() {
-    const list = this.storageService.getLists().matched.find(list => list.id === this.listId);
+    const list = this.listService.getLists().matched.find(list => list.id === this.listId);
     if (list) {
-      const listNameParts = list.name.split('|');
-      this.listName = listNameParts[0];
-      const maxPointsMatch = listNameParts[0].match(/\((.*?)\) - (\d+) points/);
-      if (maxPointsMatch) {
-        this.maxPoints = parseInt(maxPointsMatch[2], 10);
-      }
-      this.units = this.storageService.getUnitsForList(this.listId) as any;
+      this.listName = list.name;
+      this.factionName = list.faction;
+      this.maxPoints = parseInt(list.points, 10);
+      this.detachment = list.detachment;
 
-      // Extract faction name from listName
-      const factionMatch = this.listName.match(/\((.*?)\)/);
-      if (factionMatch) {
-        this.factionName = factionMatch[1];
-      }
+      this.units = this.listService.getUnitsForList(this.listId) as any;
 
       // Calculate total points
       this.totalPoints = 0;
@@ -75,8 +71,8 @@ export class MatchedListComponent implements OnInit {
     this.router.navigate(['/matched-list-add-unit', this.factionName, category, this.listId]);
   }
 
-  removeUnitFromCategory(category: keyof Omit<Faction, 'name' | 'url'>, unitName: string) {
-    this.storageService.removeUnitFromList(this.listId, unitName, category);
+  removeUnitFromCategory(category: keyof Omit<Faction, 'name' | 'url'>, unitId: string) {
+    this.unitService.removeUnitFromList(this.listId, unitId, category);
     this.loadList();
   }
 }

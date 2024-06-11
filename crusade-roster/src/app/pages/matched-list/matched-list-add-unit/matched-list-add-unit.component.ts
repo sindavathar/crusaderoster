@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { StorageService } from '../../../services/storage.service';
+import { ListService } from '../../../services/list.service';
+import { FactionService } from '../../../services/faction.service';
 import { Faction } from '../../../services/faction.model';
 
 @Component({
@@ -15,7 +16,7 @@ export class MatchedListAddUnitComponent implements OnInit {
   units: { name: string, url: string }[] = [];
   selectedUnits: { [key: string]: number } = {}; // Object to store the count of each unit added to the list
 
-  constructor(private route: ActivatedRoute, private storageService: StorageService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private listService: ListService, private factionService: FactionService, private router: Router) {}
 
   ngOnInit() {
     this.factionName = this.route.snapshot.paramMap.get('faction') || '';
@@ -26,7 +27,7 @@ export class MatchedListAddUnitComponent implements OnInit {
   }
 
   loadUnits() {
-    const factions = this.storageService.getFactions();
+    const factions = this.factionService.getFactions();
     const faction = factions.find(f => f.name === this.factionName);
     if (faction) {
       this.units = faction[this.category] as { name: string, url: string }[];
@@ -36,7 +37,7 @@ export class MatchedListAddUnitComponent implements OnInit {
   }
 
   loadSelectedUnits() {
-    const listUnits = this.storageService.getUnitsForList(this.listId);
+    const listUnits = this.listService.getUnitsForList(this.listId);
     this.selectedUnits = listUnits[this.category].reduce((acc, unit) => {
       acc[unit.name] = (acc[unit.name] || 0) + 1;
       return acc;
@@ -45,7 +46,8 @@ export class MatchedListAddUnitComponent implements OnInit {
 
   addUnit(unit: { name: string, url: string }) {
     if (this.canAddUnit(unit.name)) {
-      this.storageService.addUnitToList(this.listId, unit.name, unit.url, this.category);
+      const uniqueId = this.generateUUID();
+      this.listService.addUnitToList(this.listId, unit.name, unit.url, this.category, uniqueId);
       this.loadSelectedUnits();
     }
   }
@@ -61,5 +63,12 @@ export class MatchedListAddUnitComponent implements OnInit {
     };
 
     return (this.selectedUnits[unitName] || 0) < maxCounts[this.category];
+  }
+
+  private generateUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
   }
 }
