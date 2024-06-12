@@ -25,6 +25,12 @@ export interface Keywords {
   faction: string[];
   detachment: string[];
   unit: string[];
+  factionKeywords: string[];
+}
+
+export interface Ability {
+  name: string;
+  description: string;
 }
 
 export interface UnitDetails {

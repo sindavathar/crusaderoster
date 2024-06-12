@@ -34,16 +34,16 @@
   <p><strong>Abilities:</strong></p>
   <ul>
     <li *ngFor="let ability of unitDetails?.abilities?.core || []">
-      <strong>Core</strong>: {{ ability.name || 'N/A' }} - {{ ability.description || 'N/A' }}
+      <strong>Core:</strong> {{ ability.name || 'N/A' }} - {{ ability.description || 'N/A' }}
     </li>
     <li *ngFor="let ability of unitDetails?.abilities?.faction || []">
-      <strong>Faction</strong>: {{ ability.name || 'N/A' }} - {{ ability.description || 'N/A' }}
+      <strong>Faction:</strong> {{ ability.name || 'N/A' }} - {{ ability.description || 'N/A' }}
     </li>
     <li *ngFor="let ability of unitDetails?.abilities?.detachment || []">
-      <strong>Detachment</strong>: {{ ability.name || 'N/A' }} - {{ ability.description || 'N/A' }}
+      <strong>Detachment:</strong> {{ ability.name || 'N/A' }} - {{ ability.description || 'N/A' }}
     </li>
     <li *ngFor="let ability of unitDetails?.abilities?.unit || []">
-      <strong>Unit</strong>: {{ ability.name || 'N/A' }} - {{ ability.description || 'N/A' }}
+      <strong>Unit:</strong> {{ ability.name || 'N/A' }} - {{ ability.description || 'N/A' }}
     </li>
   </ul>
 
@@ -58,7 +58,8 @@
   <ul>
     <li><strong>Core:</strong> {{ (unitDetails?.keywords?.core || []).join(', ') || 'N/A' }}</li>
     <li><strong>Faction:</strong> {{ (unitDetails?.keywords?.faction || []).join(', ') || 'N/A' }}</li>
-    <li><strong>Detachment:</strong> {{ (unitDetails?.keywords?.detachment || []).join(', ') || 'N/A' }}</li>
-    <li><strong>Unit:</strong> {{ (unitDetails?.keywords?.unit || []).join(', ') || 'N/A' }}</li>
+    <li><strong>Detachment:</strong> {{ unitDetails?.keywords?.detachment?.[0] || 'N/A' }}</li>
+    <li><strong>Keywords:</strong> {{ (unitDetails?.keywords?.unit || []).join(', ') || 'N/A' }}</li>
+    <li><strong>Faction Keywords:</strong> {{ unitDetails?.keywords?.factionKeywords?.[0] || 'N/A' }}</li>
   </ul>
 </div>

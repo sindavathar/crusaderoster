@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UnitDetails } from './unit-details.model'; // Import the UnitDetails interface
+import {Ability, UnitDetails} from './unit-details.model'; // Import the UnitDetails interface
 import axios from 'axios';
 
 @Injectable({
@@ -97,9 +97,31 @@ export class UnitDetailsService {
   }
 
   private extractBaseSize(content: string): string {
-    // Placeholder implementation
-    return 'N/A';
+    console.log("Extracting base size from content:", content);
+
+    // Improved regex pattern to handle multiple class name variations
+    const baseSizeRegex = /<span\s+class="dsModelBase(?:2)?(?:\s+dsModelBase2Top)?\s+ShowBaseSize">\((.*?)\)<\/span>/;
+    console.log("Regex pattern used:", baseSizeRegex);
+
+    // Execute the regex pattern on the provided content
+    const match = baseSizeRegex.exec(content);
+    console.log("Regex match result:", match);
+
+    // Check if a match is found and extract the base size
+    if (match && match[1]) {
+      console.log("Extracted base size:", match[1]);
+      return match[1]; // Return the extracted base size
+    }
+
+    // If no match is found, return the default value
+    console.log("No base size found, returning default value 'N/A'");
+    return 'N/A'; // Default value if not found
   }
+
+
+
+
+
 
   private extractWeapons(content: string, type: 'ranged' | 'melee'): UnitDetails['rangedWeapons'] | UnitDetails['meleeWeapons'] {
     // Placeholder implementation
@@ -107,14 +129,59 @@ export class UnitDetailsService {
   }
 
   private extractAbilities(content: string): UnitDetails['abilities'] {
-    // Placeholder implementation
+    console.log("Extracting abilities from content:", content);
+
+    // Regex to match the abilities section and stop at 'WARGEAR ABILITIES'
+    const abilitiesSectionRegex = /<div class="dsHeader dsColorBgAS">ABILITIES<\/div>(.*?)<div class="dsHeader dsColorBgAS">WARGEAR ABILITIES<\/div>/s;
+    const match = abilitiesSectionRegex.exec(content);
+
+    if (!match) {
+      console.log("No abilities section found, returning empty abilities.");
+      return {
+        core: [],
+        faction: [],
+        detachment: [],
+        unit: []
+      };
+    }
+
+    const abilitiesContent = match[1];
+    console.log("Abilities content:", abilitiesContent);
+
+    // Regex to extract individual abilities
+    const coreRegex = /<div class="dsAbility">CORE: <b>(.*?)<\/b><\/div>/g;
+    const factionRegex = /<div class="dsAbility">FACTION: <b>(.*?)<\/b><\/div>/g;
+    const detachmentRegex = /<div class="dsAbility">DETACHMENT: <b>(.*?)<\/b><\/div>/g;
+    const unitAbilityRegex = /<div class="dsAbility"><b>([^<]+):<\/b>(.*?)<\/div>/gs;
+
+    const extractAbilities = (regex: RegExp, content: string): Ability[] => {
+      const matches = [];
+      let match;
+      while ((match = regex.exec(content)) !== null) {
+        const name = match[1].trim();
+        const description = match[2]?.trim().replace(/<.*?>/g, '').replace(/\s+/g, ' ') || '';
+        matches.push({ name, description });
+        console.log("Extracted ability:", { name, description });
+      }
+      return matches;
+    };
+
+    const coreAbilities = extractAbilities(coreRegex, abilitiesContent);
+    const factionAbilities = extractAbilities(factionRegex, abilitiesContent);
+    const detachmentAbilities = extractAbilities(detachmentRegex, abilitiesContent);
+    const unitAbilities = extractAbilities(unitAbilityRegex, abilitiesContent);
+
     return {
-      core: [],
-      faction: [],
-      detachment: [],
-      unit: []
+      core: coreAbilities,
+      faction: factionAbilities,
+      detachment: detachmentAbilities,
+      unit: unitAbilities
     };
   }
+
+
+
+
 
   private extractComposition(content: string): UnitDetails['composition'] {
     const composition = {
@@ -182,15 +249,76 @@ export class UnitDetailsService {
   }
 
   private extractKeywords(content: string): UnitDetails['keywords'] {
-    // Placeholder implementation
+    const coreRegex = /<div class="dsAbility">CORE: <b>(.*?)<\/b><\/div>/g;
+    const factionRegex = /<div class="dsAbility">FACTION: <b>(.*?)<\/b><\/div>/g;
+    const keywordsRegex = /<div class="dsLeftСolKW">\s*KEYWORDS:\s*(.*?)<\/div>/gs;
+    const factionKeywordsRegex = /<div class="dsRightСolKW">\s*FACTION KEYWORDS:\s*(.*?)<\/div>/gs;
+    const detachmentRegex = /<div class="dsHeader dsColorBgAS">\s*DETACHMENT ABILITY\s*<\/div>\s*<div class="dsAbility">\s*(.*?)\s*<\/div>/gs;
+
+    const extractMatches = (regex: RegExp, content: string): string[] => {
+      const matches = [];
+      let match;
+      while ((match = regex.exec(content)) !== null) {
+        console.log(`Match found for ${regex}:`, match[1]);
+        matches.push(match[1]);
+      }
+      return matches;
+    };
+
+    const stripHtmlTags = (html: string): string => {
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      return div.textContent || div.innerText || '';
+    };
+
+    const cleanKeywords = (keywords: string): string[] => {
+      return stripHtmlTags(keywords)
+        .split(/,\s*|\s+/) // Split by commas or spaces
+        .map(keyword => keyword.trim()) // Trim whitespace
+        .filter(keyword => keyword); // Remove empty strings
+    };
+
+    const extractAndCleanKeywords = (regex: RegExp, content: string): string[] => {
+      return extractMatches(regex, content).flatMap(match => cleanKeywords(match));
+    };
+
+    const coreMatches = extractAndCleanKeywords(coreRegex, content);
+    const factionMatches = extractAndCleanKeywords(factionRegex, content);
+    const keywordsMatches = extractMatches(keywordsRegex, content).flatMap(match => {
+      const div = document.createElement('div');
+      div.innerHTML = match;
+      return Array.from(div.querySelectorAll('span')).map(span => span.textContent || '');
+    });
+
+    const factionKeywordsMatches = extractMatches(factionKeywordsRegex, content).flatMap(match => {
+      const div = document.createElement('div');
+      div.innerHTML = match;
+      return Array.from(div.querySelectorAll('span')).map(span => span.textContent || '');
+    });
+
+    const detachmentMatches = extractMatches(detachmentRegex, content).flatMap(match => {
+      const div = document.createElement('div');
+      div.innerHTML = match;
+      return Array.from(div.querySelectorAll('span')).map(span => span.textContent || '');
+    });
+
+    //const detachmentMatches = extractAndCleanKeywords(detachmentRegex, content);
+    let uniqueFactionKeywordsArray: string[] = Array.from(new Set(factionKeywordsMatches));
+
+    console.log("coreMatches: ", coreMatches);
+    console.log("factionMatches: ", factionMatches);
+    console.log("keywordsMatches: ", keywordsMatches);
+    console.log("factionKeywordsMatches: ", uniqueFactionKeywordsArray);
+    console.log("detachmentMatches: ", detachmentMatches);
+
     return {
-      core: [],
-      faction: [],
-      detachment: [],
-      unit: []
+      core: coreMatches,
+      faction: factionMatches,
+      detachment: detachmentMatches,
+      unit: keywordsMatches,
+      factionKeywords: uniqueFactionKeywordsArray // Ensure unique values
     };
   }
-
   saveUnitDetails(unitName: string, unitDetails: UnitDetails): void {
     const localUnitDetails = localStorage.getItem(this.unitDetailsKey);
     const unitDetailsData = localUnitDetails ? JSON.parse(localUnitDetails) : {};

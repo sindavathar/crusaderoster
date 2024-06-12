@@ -53,7 +53,8 @@ export class UnitDetailComponent implements OnInit {
           core: [],
           faction: [],
           detachment: [],
-          unit: []
+          unit: [],
+          factionKeywords: [] // Ensure this property is initialized
         }
       };
     }
