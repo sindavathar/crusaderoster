@@ -4,7 +4,10 @@
   <div class="units-list">
     <ul>
       <li *ngFor="let unit of units">
-        <a [href]="unit.url" target="_blank">{{ unit.name }}</a>
+        <a [href]="unit.url" target="_blank">
+          <span *ngIf="selectedUnits[unit.name]">({{ selectedUnits[unit.name] }}) </span>
+          {{ unit.name }}
+        </a>
         <button (click)="addUnit(unit)">Add</button>
       </li>
     </ul>

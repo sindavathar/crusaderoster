@@ -15,12 +15,13 @@ export class UnitService {
     return listUnits ? JSON.parse(listUnits) : { detachments: [], characters: [], battleline: [], dedicatedTransports: [], fortifications: [], otherDatasheets: [] };
   }
 
-  addUnitToList(listId: string, unitName: string, unitUrl: string, category: keyof Omit<Faction, 'name' | 'url'>): void {
+  addUnitToList(listId: string, unitName: string, unitUrl: string, category: keyof Omit<Faction, 'name' | 'url'>, unitId: string): void {
     const units = this.getUnitsForList(listId);
-    const unit: Unit = { name: unitName, url: unitUrl, id: this.generateUUID() }; // Add id property here
+    const unit: Unit = { name: unitName, url: unitUrl, id: unitId }; // Include id
     units[category].push(unit);
     localStorage.setItem(`units_${listId}`, JSON.stringify(units));
   }
+
 
   removeUnitFromList(listId: string, unitId: string, category: keyof Omit<Faction, 'name' | 'url'>): void {
     const units = this.getUnitsForList(listId);

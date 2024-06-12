@@ -48,7 +48,7 @@ export class MatchedListAddUnitComponent implements OnInit {
     if (this.canAddUnit(unit.name)) {
       const uniqueId = this.generateUUID();
       this.listService.addUnitToList(this.listId, unit.name, unit.url, this.category, uniqueId);
-      this.loadSelectedUnits();
+      this.loadSelectedUnits(); // Reload selected units to update the count
     }
   }
 
